@@ -11,55 +11,6 @@
 ;*****************
 ; Elisp Utils
 
-
-;; ;; Erlang Section
-(defun use-erlang ()
-  (setq erlang-root-dir "/opt/local/lib/erlang")
-  (add-to-list 'load-path "/opt/local/lib/erlang/lib/tools-2.6.5.1/emacs")
-  (add-to-list 'exec-path "/opt/local/lib/erlang/bin")
-  (require 'erlang-start) 
-  )
-
-(use-erlang)
-
-(defun use-distel ()
-;; This is needed for Distel setup
-  (let ((distel-dir "/Users/jorge/cs/erlang/distel/elisp"))
-    (unless (member distel-dir load-path)
-    ;; Add distel-dir to the end of load-path
-      (add-to-list 'load-path distel-dir)))
-
-  (require 'distel)
-  (distel-setup)
-  
-  (add-hook 'erlang-mode-hook
-	    (lambda ()
-	      ;; when starting an Erlang shell in Emacs, default in the node name
-	      (setq inferior-erlang-machine-options '("-sname" "emacs"))
-	      ;; add Erlang functions to an imenu menu
-	      (imenu-add-to-menubar "imenu")))
-
-  ;; A number of the erlang-extended-mode key bindings are useful in the shell too
-  (defconst distel-shell-keys
-    '(("\C-\M-i"   erl-complete)
-      ("\M-?"      erl-complete)	
-      ("\M-."      erl-find-source-under-point)
-      ("\M-,"      erl-find-source-unwind) 
-      ("\M-*"      erl-find-source-unwind) 
-      )
-    "Additional keys to bind when in Erlang shell.")
-
-  (add-hook 'erlang-shell-mode-hook
-	    (lambda ()
-      ;; add some Distel bindings to the Erlang shell
-	      (dolist (spec distel-shell-keys)
-		(define-key erlang-shell-mode-map (car spec) (cadr spec)))))
-  )
-
-(use-distel)
-
-;; End Erlang
-
 (defun group (n source)
   (if (endp source)
       nil
@@ -113,7 +64,7 @@
   )
 
 (defun linux-setup ()
-
+  (disable-if-bound menu-bar-mode)
   )
 
 (cond ((eq system-type 'darwin)
@@ -134,11 +85,12 @@
 ;  "Minor mode for pseudo-structurally editing lisp code"
 ;  t)
 
-(add-hook 'lisp-mode-hook (lambda () (paredit-mode +1)))
+;(add-hook 'lisp-mode-hook (lambda () (paredit-mode +1)))
 
-(mapc 'require '(cl
-		 paren
-		 ))
+(mapc 'require
+      '(cl
+	paren
+	))
 
 ;; My emacs commands
 
@@ -186,7 +138,7 @@
       ("\M-g" 'goto-line)
       ("\M-j" 'shell)
       ("\C-cf" 'run-factor)
-      ("\C-c\C-q" 'quote-next-word) ; experimental
+      ("\C-c\C-q" 'quote-prev) 
       ("\M-u" 'upcase-prev)
       ))
 
@@ -204,14 +156,13 @@
   (interactive)
   (load-file (concat HOME ".emacs.d/init.el")))
 
-;(defun color-theme-gnome2 ())
-
-; only works with paredit
-(defun quote-next-word ()
+(defun quote-prev ()
   (interactive)
-  (mark-word)
-  (paredit-doublequote)
-  )
+  (save-excursion
+    (insert "\"")
+    (backward-word)
+    (insert "\""))
+  (forward-char))
 
 (defun upcase-prev ()
   (interactive)
@@ -339,3 +290,51 @@
 
 ;(use-zen)
   
+
+;; ;; Erlang Section
+(defun use-erlang ()
+  (setq erlang-root-dir "/opt/local/lib/erlang")
+  (add-to-list 'load-path "/opt/local/lib/erlang/lib/tools-2.6.5.1/emacs")
+  (add-to-list 'exec-path "/opt/local/lib/erlang/bin")
+  (require 'erlang-start) 
+  )
+
+(use-erlang)
+
+(defun use-distel ()
+;; This is needed for Distel setup
+  (let ((distel-dir "/Users/jorge/cs/erlang/distel/elisp"))
+    (unless (member distel-dir load-path)
+    ;; Add distel-dir to the end of load-path
+      (add-to-list 'load-path distel-dir)))
+
+  (require 'distel)
+  (distel-setup)
+  
+  (add-hook 'erlang-mode-hook
+	    (lambda ()
+	      ;; when starting an Erlang shell in Emacs, default in the node name
+	      (setq inferior-erlang-machine-options '("-sname" "emacs"))
+	      ;; add Erlang functions to an imenu menu
+	      (imenu-add-to-menubar "imenu")))
+
+  ;; A number of the erlang-extended-mode key bindings are useful in the shell too
+  (defconst distel-shell-keys
+    '(("\C-\M-i"   erl-complete)
+      ("\M-?"      erl-complete)	
+      ("\M-."      erl-find-source-under-point)
+      ("\M-,"      erl-find-source-unwind) 
+      ("\M-*"      erl-find-source-unwind) 
+      )
+    "Additional keys to bind when in Erlang shell.")
+
+  (add-hook 'erlang-shell-mode-hook
+	    (lambda ()
+      ;; add some Distel bindings to the Erlang shell
+	      (dolist (spec distel-shell-keys)
+		(define-key erlang-shell-mode-map (car spec) (cadr spec)))))
+  )
+
+(use-distel)
+
+;; End Erlang
