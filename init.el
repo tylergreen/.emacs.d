@@ -28,7 +28,7 @@
   `(lambda ,params ,@body))
 
 ; the need for this highlights a big weakness of lisp macros 
-(defmacro mapm (macro defs)
+(defmacro mapm (macro &rest defs)
   "apply a macro to each list in DEFN"
   `(progn ,@(mapcar (fn (x) (cons macro x)) defs)))
 
@@ -43,11 +43,10 @@
   `(when (fboundp ',fn) (,fn -1)))
 
 (mapm disable-if-bound
-      ((toggle-scroll-bar)
+      (toggle-scroll-bar)
 ;       (menu-bar-mode) 
        (tool-bar-mode)
-       )
-)
+    )
 
 ; Windowing Config 
 
@@ -123,7 +122,7 @@
 ; (mapc (fn (bind) (global-set-key (car bind) (cadr bind)))
 ;                   (mkasso ...))
 (mapm global-set-key
-      (("\C-x\C-m" 'execute-extended-command)
+      ("\C-x\C-m" 'execute-extended-command)
       ("\C-c\C-m" 'execute-extended-command)
       ("\C-xm" 'execute-extended-command)
       ("\C-w" 'kill-word)
@@ -140,7 +139,7 @@
       ("\C-cf" 'run-factor)
       ("\C-c\C-q" 'quote-prev) 
       ("\M-u" 'upcase-prev)
-      ))
+      )
 
 (defun disable (commands)
   (mapc (fn (x) (put x 'disabled t))
