@@ -60,6 +60,9 @@
 	;setq  mac-command-modifier 'meta
 	;ispell-program-name "aspell"
 	)
+  (add-to-list 'load-path "/Users/jorge/cs/emacs")
+  (require 'tea-time)
+
   )
 
 (defun linux-setup ()
@@ -196,18 +199,18 @@
 ; Factor Setting
 
 (defun use-factor ()
-  (setq fbase (in-cs "factor/"))
+  (let ((fbase (in-cs "factor/")))
 					; fuel
-  (load-file (concat fbase "misc/fuel/fu.el"))
-  (setq fuel-listener-factor-binary (concat fbase "factor")
-	fuel-listener-factor-image (concat fbase "factor.image"))
+    (load-file (concat fbase "misc/fuel/fu.el"))
+    (setq fuel-listener-factor-binary (concat fbase "factor")
+	  fuel-listener-factor-image (concat fbase "factor.image"))
 
   ;; custom fuel keys
 ;  (define-key fuel-mode-map (kbd "C-c p") 'fuel-eval-definition)
 ;  (define-key fuel-mode-map (kbd "C-c u") 'fuel-show-callers)
 ;  (define-key fuel-mode-map (kbd "C-c o") 'fuel-show-callees)
 ;  (define-key fuel-mode-map (kbd "C-c i") 'fuel-refactor-inline-word)
-  )
+    ))
 
 (use-factor)
 
@@ -289,7 +292,6 @@
 
 ;(use-zen)
   
-
 ;; ;; Erlang Section
 (defun use-erlang ()
   (setq erlang-root-dir "/opt/local/lib/erlang")
@@ -336,4 +338,15 @@
 
 (use-distel)
 
-;; End Erlang
+;;;;;;;;;;;;;
+;; Frequencey commands
+
+(defun use-comm-freq ()
+  (require 'command-frequency)
+  (command-frequency-table-load)
+  (command-frequency-mode 1)
+  (command-frequency-autosave-mode 1))
+
+(use-comm-freq)
+
+
