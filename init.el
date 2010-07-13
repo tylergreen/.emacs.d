@@ -3,9 +3,6 @@
 ;; to find unbalanced parens -- go to the end of the file and type C-u C-M-u.
 ;; This will move you to the beginning of the first defun that is unbalanced. 
 
-;; run multiple subshells -- rename shell buffer using m-x rename-uniquely, then 
-;; M-j to start new shell as normal
-
 ; /opt/local/share/22.3/lisp
 
 ;*****************
@@ -48,15 +45,9 @@
        (tool-bar-mode)
     )
 
-; Windowing Config 
-
-(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
-(add-hook 'shell-mode-hook
-	  'ansi-color-for-comint-mode-on)
-
 (defun mac-setup ()
   (setq HOME "/Users/jorge/"
-	CS "/Users/jorge/cs/"
+	CS "/Users/jorge/cs"
 	;setq  mac-command-modifier 'meta
 	;ispell-program-name "aspell"
 	)
@@ -64,6 +55,8 @@
 
 (defun linux-setup ()
   (disable-if-bound menu-bar-mode)
+  (setq CS "/home/tyler/"
+	HOME "/home/tyler/")
   )
 
 (cond ((eq system-type 'darwin)
@@ -73,12 +66,36 @@
 
 (defun in-cs (extension) (concat CS extension))
 
+(defun add-lib (name)
+  (add-to-list 'load-path
+	       (concat HOME ".emacs.d/" name)))
+
+;;;;;;;;;;;;;;;;;
+; Windowing Config 
+
+(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
+(add-hook 'shell-mode-hook
+	  'ansi-color-for-comint-mode-on)
+load-path
+(add-lib "color-theme-6.6.0/")
+(add-lib "color-theme-6.6.0/themes/")
+(require 'color-theme)
+(color-theme-initialize)
+(color-theme-gnome2)
+
+; set up color-theme cycling some time
+(setq my-color-themes '(
+			color-theme-charcoal-black
+			color-theme-calm-forest
+			))
+
 ;*****************
 ; Libraries
 
 ;(require 'magit)
 ; paredit-- matching delimiter tool   
-(add-to-list 'load-path "/Users/jorge/.emacs.d/")
+
+;(add-to-list 'load-path (concat HOME ".emacs.d/"))
 
 ;(autoload 'paredit-mode "paredit"
 ;  "Minor mode for pseudo-structurally editing lisp code"
@@ -90,11 +107,6 @@
       '(cl
 	paren
 	))
-
-;; My emacs commands
-
-(add-to-list 'load-path "~/cs/mython/sandbox")
-(require 'mython-mode)
 
 ;**************
 ; Shortcuts
@@ -113,7 +125,7 @@
       (append
        (mkassoc '("\\.pl\\'" prolog-mode
  		  "\\.txt\\'" auto-fill-mode
-		  "\\.my\\'" mython-mode
+		  ; "\\.my\\'" mython-mode
 		  "\\.py\\'" python-mode
 		  ))
        auto-mode-alist))
@@ -209,7 +221,7 @@
 ;  (define-key fuel-mode-map (kbd "C-c i") 'fuel-refactor-inline-word)
   )
 
-(use-factor)
+;(use-factor)
 
 ;----------------
 ; gnu smalltalk
@@ -222,7 +234,7 @@
   (push '("\\.st\\'" . smalltalk-mode)
 	auto-mode-alist))
 
-(use-smalltalk)
+;(use-smalltalk)
 
 ; *********
 ; slime
@@ -248,7 +260,7 @@
   (slime-setup '(slime-fancy slime-tramp slime-asdf))
   )
 
-(use-slime)
+;(use-slime)
 
 ;***************
 ; clojure-slime
@@ -272,7 +284,7 @@
   (add-to-list 'slime-lisp-implementations '(sbcl ("sbcl")))
   )
 
-(use-clojure)
+;(use-clojure)
 
 ; M-- M-x slime ;; prompts which lisp to use, sbcl or clojure
 ; slime-quit-lisp to close
@@ -298,7 +310,7 @@
   (require 'erlang-start) 
   )
 
-(use-erlang)
+;(use-erlang)
 
 (defun use-distel ()
 ;; This is needed for Distel setup
@@ -334,6 +346,6 @@
 		(define-key erlang-shell-mode-map (car spec) (cadr spec)))))
   )
 
-(use-distel)
+;(use-distel)
 
 ;; End Erlang
