@@ -42,7 +42,7 @@
 (mapm disable-if-bound
       (toggle-scroll-bar)
 ;       (menu-bar-mode) 
-       (tool-bar-mode)
+;       (tool-bar-mode)
     )
 
 (defun mac-setup ()
@@ -53,8 +53,15 @@
 	)
   )
 
+(defun clipboard-setup ()
+  ; allow cut from emacs to paste to other apps
+  (setq x-select-enable-clipboard t)
+  ;clipboard-yank -- to paste from other apps
+)
+
 (defun linux-setup ()
-  (disable-if-bound menu-bar-mode)
+  (disable-if-bound menu-bar-mode) 
+  (clipboard-setup)
   (setq CS "/home/tyler/"
 	HOME "/home/tyler/")
   )
@@ -159,6 +166,9 @@ load-path
 
 (disable '(upcase-region
 	   downcase-region))
+
+(require 'tramp)
+(setq tramp-default-method "ssh")
 
 ; *********
 ; Custom Commands
