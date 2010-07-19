@@ -3,8 +3,6 @@
 ;; to find unbalanced parens -- go to the end of the file and type C-u C-M-u.
 ;; This will move you to the beginning of the first defun that is unbalanced. 
 
-; /opt/local/share/22.3/lisp
-
 ;*****************
 ; Elisp Utils
 
@@ -42,7 +40,7 @@
 (mapm disable-if-bound
       (toggle-scroll-bar)
 ;       (menu-bar-mode) 
-;       (tool-bar-mode)
+       (tool-bar-mode)
     )
 
 (defun mac-setup ()
@@ -53,15 +51,8 @@
 	)
   )
 
-(defun clipboard-setup ()
-  ; allow cut from emacs to paste to other apps
-  (setq x-select-enable-clipboard t)
-  ;clipboard-yank -- to paste from other apps
-)
-
 (defun linux-setup ()
-  (disable-if-bound menu-bar-mode) 
-  (clipboard-setup)
+  (disable-if-bound menu-bar-mode)
   (setq CS "/home/tyler/"
 	HOME "/home/tyler/")
   )
@@ -77,24 +68,30 @@
   (add-to-list 'load-path
 	       (concat HOME ".emacs.d/" name)))
 
+(add-lib ".")
+
 ;;;;;;;;;;;;;;;;;
 ; Windowing Config 
 
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 (add-hook 'shell-mode-hook
 	  'ansi-color-for-comint-mode-on)
-load-path
-(add-lib "color-theme-6.6.0/")
-(add-lib "color-theme-6.6.0/themes/")
-(require 'color-theme)
-(color-theme-initialize)
-(color-theme-gnome2)
+
+(defun make-pretty ()
+  (add-lib "color-theme-6.6.0/")
+  (add-lib "color-theme-6.6.0/themes/")
+  (require 'color-theme)
+  (color-theme-initialize)
+  (color-theme-gnome2)
 
 ; set up color-theme cycling some time
-(setq my-color-themes '(
-			color-theme-charcoal-black
-			color-theme-calm-forest
-			))
+  (setq my-color-themes '(
+			  color-theme-charcoal-black
+			  color-theme-calm-forest
+			  ))
+  )
+
+(make-pretty)
 
 ;*****************
 ; Libraries
@@ -166,9 +163,6 @@ load-path
 
 (disable '(upcase-region
 	   downcase-region))
-
-(require 'tramp)
-(setq tramp-default-method "ssh")
 
 ; *********
 ; Custom Commands
@@ -359,3 +353,9 @@ load-path
 ;(use-distel)
 
 ;; End Erlang
+
+;; P4
+
+(load-library "p4")
+
+
