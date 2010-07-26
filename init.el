@@ -52,6 +52,7 @@
   )
 
 (defun linux-setup ()
+  (setq x-select-enable-clipboard t)
   (disable-if-bound menu-bar-mode)
   (setq CS "/home/tyler/"
 	HOME "/home/tyler/")
@@ -97,15 +98,11 @@
 ; Libraries
 
 ;(require 'magit)
-; paredit-- matching delimiter tool   
 
 ;(add-to-list 'load-path (concat HOME ".emacs.d/"))
 
-;(autoload 'paredit-mode "paredit"
-;  "Minor mode for pseudo-structurally editing lisp code"
-;  t)
-
-;(add-hook 'lisp-mode-hook (lambda () (paredit-mode +1)))
+(require 'autopair)
+(autopair-global-mode)
 
 (mapc 'require
       '(cl
@@ -354,8 +351,5 @@
 
 ;; End Erlang
 
-;; P4
-
-(load-library "p4")
 
 
