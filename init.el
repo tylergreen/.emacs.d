@@ -101,13 +101,24 @@
 
 ;(add-to-list 'load-path (concat HOME ".emacs.d/"))
 
-(require 'autopair)
-(autopair-global-mode)
+
 
 (mapc 'require
       '(cl
-	paren
+	autopair
+	multi-term
+	ibuffer  ;; need to investigate the use of this
+
 	))
+
+(autopair-global-mode)
+
+(defun use-ido ()
+  (require 'ido)
+  (ido-mode t)
+  (setq ido-enable-flex-matching t))
+
+(use-ido)
 
 ;**************
 ; Shortcuts
