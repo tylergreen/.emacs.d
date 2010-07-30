@@ -44,8 +44,8 @@
     )
 
 (defun mac-setup ()
-  (setq HOME "/Users/jorge/"
-	CS "/Users/jorge/cs"
+  (setq HOME "/Users/tyler/"
+	CS "/Users/tyler/"
 	;setq  mac-command-modifier 'meta
 	;ispell-program-name "aspell"
 	)
@@ -163,6 +163,8 @@
       ("\C-cf" 'run-factor)
       ("\C-c\C-q" 'quote-prev) 
       ("\M-u" 'upcase-prev)
+      ("\M-c" 'cap-prev)
+      ("\C-cj" 'shell-resync-dirs) ; change this to shell local-mode
       )
 
 (defun disable (commands)
@@ -191,6 +193,11 @@
   (interactive)
   (backward-word)
   (upcase-word 1))
+
+(defun cap-prev ()
+  (Interactive)
+  (backward-word)
+  (capitalize-word 1))
 
 (defun my-html-mode-hook ()
   (define-key html-mode-map (kbd "C-c C-;") 'sgml-close-tag))
