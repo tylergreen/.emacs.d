@@ -101,17 +101,14 @@
 
 ;(add-to-list 'load-path (concat HOME ".emacs.d/"))
 
-
-
 (mapc 'require
       '(cl
 	autopair
 	multi-term
-	ibuffer  ;; need to investigate the use of this
-
+	ibuffer  ;; need to further investigate the use of this
 	))
 
-(autopair-global-mode)
+(autopair-global-mode t)
 
 (defun use-ido ()
   (require 'ido)
@@ -146,9 +143,9 @@
 ; (mapc (fn (bind) (global-set-key (car bind) (cadr bind)))
 ;                   (mkasso ...))
 (mapm global-set-key
-      ("\C-x\C-m" 'execute-extended-command)
-      ("\C-c\C-m" 'execute-extended-command)
-      ("\C-xm" 'execute-extended-command)
+;      ("\C-x\C-m" 'execute-extended-command)
+ ;     ("\C-c\C-m" 'execute-extended-command)
+;      ("\C-xm" 'execute-extended-command)
       ("\C-w" 'kill-word)
       ("\C-q" 'backward-kill-word)
       ("\C-x\C-k" 'kill-region)
@@ -164,8 +161,14 @@
       ("\C-c\C-q" 'quote-prev) 
       ("\M-u" 'upcase-prev)
       ("\M-c" 'cap-prev)
-      ("\C-cj" 'shell-resync-dirs) ; change this to shell local-mode
+      ((kbd "C-x C-b") 'ibuffer)
       )
+
+(add-hook 'comint-mode-hook
+	  (fn ()
+	      (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
+
+		
 
 (defun disable (commands)
   (mapc (fn (x) (put x 'disabled t))
@@ -364,6 +367,36 @@
 	      (dolist (spec distel-shell-keys)
 		(define-key erlang-shell-mode-map (car spec) (cadr spec)))))
   )
+
+;; Customize this for you own use -- straight from emacs-fu
+(setq ibuffer-saved-filter-groups
+  (quote (("default"      
+            ("Org" ;; all org-related buffers
+              (mode . org-mode))  
+            ("Mail"
+              (or  ;; mail-related buffers
+               (mode . message-mode)
+               (mode . mail-mode)
+               ;; etc.; all your mail related modes
+               ))
+            ("MyProject1"
+              (filename . "src/myproject1/"))
+            ("MyProject2"
+              (filename . "src/myproject2/"))
+            ("Programming" ;; prog stuff not already in MyProjectX
+              (or
+                (mode . c-mode)
+                (mode . perl-mode)
+                (mode . python-mode)
+                (mode . emacs-lisp-mode)
+                ;; etc
+                )) 
+            ("ERC"   (mode . erc-mode))))))
+
+(add-hook 'ibuffer-mode-hook
+  (lambda ()
+    (ibuffer-switch-to-saved-filter-groups "default")))
+
 
 ;(use-distel)
 
