@@ -92,7 +92,7 @@
 			  ))
   )
 
-(make-pretty)
+;(make-pretty)
 
 ;*****************
 ; Libraries
@@ -130,22 +130,21 @@
 ; don't make me type yes and no
 (fset 'yes-or-no-p 'y-or-n-p)
 
-(setq auto-mode-alist
-      (append
-       (mkassoc '("\\.pl\\'" prolog-mode
+(nconc auto-mode-alist
+       (mkassoc '(
+		  "\\.pl\\'" prolog-mode
  		  "\\.txt\\'" auto-fill-mode
 		  ; "\\.my\\'" mython-mode
 		  "\\.py\\'" python-mode
-		  ))
-       auto-mode-alist))
+		  "\\.clj\\" clojure-mode
+		  "\\.el\\" emacs-lisp-mode
+		  )))
+
 
 ; the mapc approach has many weakness...
 ; (mapc (fn (bind) (global-set-key (car bind) (cadr bind)))
 ;                   (mkasso ...))
 (mapm global-set-key
-;      ("\C-x\C-m" 'execute-extended-command)
- ;     ("\C-c\C-m" 'execute-extended-command)
-;      ("\C-xm" 'execute-extended-command)
       ("\C-w" 'kill-word)
       ("\C-q" 'backward-kill-word)
       ("\C-x\C-k" 'kill-region)
@@ -198,7 +197,7 @@
   (upcase-word 1))
 
 (defun cap-prev ()
-  (Interactive)
+  (interactive)
   (backward-word)
   (capitalize-word 1))
 
@@ -289,12 +288,10 @@
 
 (defun use-clojure ()
 ; clojure-mode
-  (add-to-list 'load-path "~/cs/clojure/clojure-mode")
-
-  (require 'clojure-mode)
+ (require 'clojure-mode)
 
 ; swank-clojure
-  (add-to-list 'load-path "~/cs/clojure/swank-clojure/src/emacs")
+ (add-to-list 'load-path "~/cs/clojure/swank-clojure/src/emacs")
 
   (setq swank-clojure-jar-path "~/cs/clojure/clojure-core/clojure.jar"
 	swank-clojure-extra-classpaths
@@ -368,9 +365,14 @@
 		(define-key erlang-shell-mode-map (car spec) (cadr spec)))))
   )
 
+;(use-distel)
+
+;; End Erlang
+
+
 ;; Customize this for you own use -- straight from emacs-fu
 (setq ibuffer-saved-filter-groups
-  (quote (("default"      
+  '((("default"      
             ("Org" ;; all org-related buffers
               (mode . org-mode))  
             ("Mail"
@@ -379,10 +381,10 @@
                (mode . mail-mode)
                ;; etc.; all your mail related modes
                ))
-            ("MyProject1"
-              (filename . "src/myproject1/"))
-            ("MyProject2"
-              (filename . "src/myproject2/"))
+            ("iovation"
+              (filename . "~/clojure/iovation/"))
+            ("erlang"
+              (filename . "~/erlang/"))
             ("Programming" ;; prog stuff not already in MyProjectX
               (or
                 (mode . c-mode)
@@ -396,11 +398,6 @@
 (add-hook 'ibuffer-mode-hook
   (lambda ()
     (ibuffer-switch-to-saved-filter-groups "default")))
-
-
-;(use-distel)
-
-;; End Erlang
 
 
 
