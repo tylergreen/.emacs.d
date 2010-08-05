@@ -71,6 +71,7 @@
 
 (add-lib ".")
 
+
 ;;;;;;;;;;;;;;;;;
 ; Windowing Config 
 
@@ -92,7 +93,9 @@
 			  ))
   )
 
-;(make-pretty)
+(when (eq window-system 'ns)
+  (make-pretty))
+
 
 ;*****************
 ; Libraries
@@ -103,11 +106,16 @@
 
 (mapc 'require
       '(cl
-	autopair
 	multi-term
-	ibuffer  ;; need to further investigate the use of this
+	ibuffer 
+	tramp
 	))
 
+;; Server
+(require 'server)
+(server-start)
+
+(require 'autopair)
 (autopair-global-mode t)
 
 (defun use-ido ()
