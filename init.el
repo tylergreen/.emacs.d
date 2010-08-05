@@ -93,7 +93,7 @@
 			  ))
   )
 
-(when (eq window-system 'ns)
+(when (member window-system '(x ns))
   (make-pretty))
 
 
@@ -213,25 +213,6 @@
   (define-key html-mode-map (kbd "C-c C-;") 'sgml-close-tag))
 
 (add-hook 'html-mode-hook 'my-html-mode-hook)
-
-; don't work
-(defun untabify ()
-  (interactive)
-  (untabify (point-min) (point-max)))
-
-(defun untabify-buffer ()
-  (interactive)
-  (untabify (point-min) (point-max)))
-
-(defun indent-buffer ()
-  (interactive)
-  (indent-region (point-min) (point-max)))
-
-(defun cleanup-buffer ()
-  (interactive)
-  (indent-buffer)
-  (untabify-buffer)
-  (delete-trailing-whitespace))
 
 ;**************
 ; Factor Setting
@@ -407,5 +388,5 @@
   (lambda ()
     (ibuffer-switch-to-saved-filter-groups "default")))
 
-
+(load-library "p4.el")
 
