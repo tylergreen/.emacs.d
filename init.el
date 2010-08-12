@@ -1,5 +1,4 @@
 ;; My .emacs file
-
 ;; to find unbalanced parens -- go to the end of the file and type C-u C-M-u.
 ;; This will move you to the beginning of the first defun that is unbalanced. 
 
@@ -34,6 +33,19 @@
 ;*******************
 ; Environments
 
+
+;;; This was installed by package-install.el.
+;;; This provides support for the package system and
+;;; interfacing with ELPA, the package archive.
+;;; Move this code earlier if you want to reference
+;;; packages in your .emacs.
+(when
+    (load
+     (expand-file-name "~/.emacs.d/elpa/package.el"))
+  (package-initialize))
+
+(load-file "~/.emacs.d/elpa/yaml-mode-0.0.5/yaml-mode.el")
+
 (defmacro disable-if-bound (fn)
   `(when (fboundp ',fn) (,fn -1)))
 
@@ -41,7 +53,7 @@
       (toggle-scroll-bar)
 ;       (menu-bar-mode) 
        (tool-bar-mode)
-    )
+       )
 
 (defun mac-setup ()
   (setq HOME "/Users/tyler/"
@@ -84,18 +96,11 @@
   (add-lib "color-theme-6.6.0/themes/")
   (require 'color-theme)
   (color-theme-initialize)
-  (color-theme-gnome2)
+  (if window-system 
+      (color-theme-gnome2)
+    (color-theme-calm-forest)))
 
-; set up color-theme cycling some time
-  (setq my-color-themes '(
-			  color-theme-charcoal-black
-			  color-theme-calm-forest
-			  ))
-  )
-
-(when (member window-system '(x ns))
-  (make-pretty))
-
+(make-pretty)
 
 ;*****************
 ; Libraries
@@ -109,6 +114,7 @@
 	multi-term
 	ibuffer 
 	tramp
+;	pg
 	))
 
 ;; Server
@@ -138,15 +144,18 @@
 ; don't make me type yes and no
 (fset 'yes-or-no-p 'y-or-n-p)
 
-(nconc auto-mode-alist
-       (mkassoc '(
+
+(setq auto-mode-alist
+      (append (mkassoc '(
 		  "\\.pl\\'" prolog-mode
- 		  "\\.txt\\'" auto-fill-mode
+ 		  "\\.txt$" auto-fill-mode
 		  ; "\\.my\\'" mython-mode
-		  "\\.py\\'" python-mode
-		  "\\.clj\\" clojure-mode
-		  "\\.el\\" emacs-lisp-mode
-		  )))
+		  "\\.py$" python-mode
+		  "\\.clj$'" clojure-mode
+		  "\\.el$" emacs-lisp-mode
+		  "\\.yml$" yaml-mode
+		  ))
+	      auto-mode-alist))
 
 
 ; the mapc approach has many weakness...
@@ -389,4 +398,5 @@
     (ibuffer-switch-to-saved-filter-groups "default")))
 
 (load-library "p4.el")
+
 
