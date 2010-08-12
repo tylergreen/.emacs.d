@@ -200,6 +200,10 @@
   (interactive)
   (load-file (concat HOME ".emacs.d/init.el")))
 
+(defun dot ()
+  (interactive)
+  (find-file "~/.emacs.d/init.el"))
+
 (defun quote-prev ()
   (interactive)
   (save-excursion
