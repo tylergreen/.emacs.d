@@ -71,7 +71,6 @@
 
 (add-lib ".")
 
-
 ;;;;;;;;;;;;;;;;;
 ; Windowing Config 
 
@@ -392,5 +391,6 @@
   (lambda ()
     (ibuffer-switch-to-saved-filter-groups "default")))
 
-(load-library "p4.el")
+(if (file-exists-p "p4.el")
+    (load-library "p4.el"))
 
