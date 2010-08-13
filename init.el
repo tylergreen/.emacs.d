@@ -93,7 +93,7 @@
 			  ))
   )
 
-(when (eq window-system 'ns)
+(when (member window-system '(x ns))
   (make-pretty))
 
 
@@ -392,5 +392,5 @@
   (lambda ()
     (ibuffer-switch-to-saved-filter-groups "default")))
 
-
+(load-library "p4.el")
 
