@@ -191,6 +191,10 @@
   (interactive)
   (load-file (concat HOME ".emacs.d/init.el")))
 
+(defun dot ()
+  (interactive)
+  (find-file "~/.emacs.d/init.el"))
+
 (defun quote-prev ()
   (interactive)
   (save-excursion
@@ -213,25 +217,6 @@
   (define-key html-mode-map (kbd "C-c C-;") 'sgml-close-tag))
 
 (add-hook 'html-mode-hook 'my-html-mode-hook)
-
-; don't work
-(defun untabify ()
-  (interactive)
-  (untabify (point-min) (point-max)))
-
-(defun untabify-buffer ()
-  (interactive)
-  (untabify (point-min) (point-max)))
-
-(defun indent-buffer ()
-  (interactive)
-  (indent-region (point-min) (point-max)))
-
-(defun cleanup-buffer ()
-  (interactive)
-  (indent-buffer)
-  (untabify-buffer)
-  (delete-trailing-whitespace))
 
 ;**************
 ; Factor Setting
