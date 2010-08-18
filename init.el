@@ -95,25 +95,22 @@
   (add-lib "color-theme-6.6.0/themes/")
   (require 'color-theme)
   (color-theme-initialize)
-  (if window-system 
+  (if (eq system-type 'darwin)
       (color-theme-gnome2)
-    (color-theme-calm-forest)))
+      (color-theme-calm-forest)))
 
 (make-pretty)
 
 ;*****************
 ; Libraries
 
-;(require 'magit)
-
-;(add-to-list 'load-path (concat HOME ".emacs.d/"))
-
 (mapc 'require
       '(cl
 	multi-term
 	ibuffer 
 	tramp
-;	pg
+	sql
+	pg
 	))
 
 ;; Server
@@ -125,8 +122,7 @@
 
 (defun use-ido ()
   (require 'ido)
-  (ido-mode t)
-  (setq ido-enable-flex-matching t))
+  (ido-mode t))
 
 (use-ido)
 
@@ -142,7 +138,6 @@
 
 ; don't make me type yes and no
 (fset 'yes-or-no-p 'y-or-n-p)
-
 
 (setq auto-mode-alist
       (append (mkassoc '(
@@ -179,11 +174,10 @@
       ((kbd "C-x C-b") 'ibuffer)
       )
 
-(add-hook 'comint-mode-hook
-	  (fn ()
-	      (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
+(global-unset-key "\C-z")
 
-		
+(add-hook 'comint-mode-hook
+	  (fn () (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
 
 (defun disable (commands)
   (mapc (fn (x) (put x 'disabled t))
@@ -195,29 +189,40 @@
 ; *********
 ; Custom Commands
 
-(defun reload-emacs ()
-  (interactive)
-  (load-file (concat HOME ".emacs.d/init.el")))
+(defun recompile-emacs ()
+  (when (file-newer-then-file-p "~/.emacs.d/init.el" "~/.emacs.d/init.elc")
+    (byte-compile-file "~/.emacs.d/init.el")))
 
-(defun dot ()
-  (interactive)
+(add-hook 'kill-emacs-hook 'recompile-emacs)
+
+(defmacro defi (name &rest body)
+  `(defun ,name () 
+     (interactive)
+     ,@body))
+
+(defi reload-emacs 
+  (load-file (concat HOME ".emacs.d/init.el"))
+  (color-theme-calm-forest)
+  (autopair-global-mode t))
+
+(defi dot
   (find-file "~/.emacs.d/init.el"))
 
-(defun quote-prev ()
-  (interactive)
+(defi bash
+  (find-file "~/.bashrc"))
+
+(defi quote-prev
   (save-excursion
     (insert "\"")
     (backward-word)
     (insert "\""))
   (forward-char))
 
-(defun upcase-prev ()
-  (interactive)
+(defi upcase-prev
   (backward-word)
   (upcase-word 1))
 
-(defun cap-prev ()
-  (interactive)
+(defi cap-prev 
   (backward-word)
   (capitalize-word 1))
 
@@ -370,7 +375,7 @@
 
 ;; End Erlang
 
-
+(load "~/.emacs.d/pg.el")
 ;; Customize this for you own use -- straight from emacs-fu
 (setq ibuffer-saved-filter-groups
   '((("default"      
