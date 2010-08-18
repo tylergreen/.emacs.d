@@ -30,6 +30,10 @@
 ; refer to the following list.
 ; The last of the lists is not altered
 
+(defun load-if-exists (filename)
+  (if (file-exists-p filename)
+      (load-file filename)))
+
 ;*******************
 ; Environments
 
@@ -43,8 +47,7 @@
     (load
      (expand-file-name "~/.emacs.d/elpa/package.el"))
   (package-initialize))
-
-(load-file "~/.emacs.d/elpa/yaml-mode-0.0.5/yaml-mode.el")
+(load-if-exists "~/.emacs.d/elpa/yaml-mode-0.0.5/yaml-mode.el")
 
 (defmacro disable-if-bound (fn)
   `(when (fboundp ',fn) (,fn -1)))
@@ -330,12 +333,12 @@
 ;; ;; Erlang Section
 (defun use-erlang ()
   (setq erlang-root-dir "/opt/local/lib/erlang")
-  (add-to-list 'load-path "/opt/local/lib/erlang/lib/tools-2.6.5.1/emacs")
+  (add-to-list 'load-path "/opt/local/lib/erlang/lib/tools-2.6.6/emacs")
   (add-to-list 'exec-path "/opt/local/lib/erlang/bin")
   (require 'erlang-start) 
   )
 
-;(use-erlang)
+(use-erlang)
 
 (defun use-distel ()
 ;; This is needed for Distel setup
