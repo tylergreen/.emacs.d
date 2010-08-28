@@ -1,12 +1,6 @@
 ;; My .emacs file
-
 ;; to find unbalanced parens -- go to the end of the file and type C-u C-M-u.
 ;; This will move you to the beginning of the first defun that is unbalanced. 
-
-;; run multiple subshells -- rename shell buffer using m-x rename-uniquely, then 
-;; M-j to start new shell as normal
-
-; /opt/local/share/22.3/lisp
 
 ;*****************
 ; Elisp Utils
@@ -36,8 +30,24 @@
 ; refer to the following list.
 ; The last of the lists is not altered
 
+(defun load-if-exists (filename)
+  (if (file-exists-p filename)
+      (load-file filename)))
+
 ;*******************
 ; Environments
+
+
+;;; This was installed by package-install.el.
+;;; This provides support for the package system and
+;;; interfacing with ELPA, the package archive.
+;;; Move this code earlier if you want to reference
+;;; packages in your .emacs.
+(when
+    (load
+     (expand-file-name "~/.emacs.d/elpa/package.el"))
+  (package-initialize))
+(load-if-exists "~/.emacs.d/elpa/yaml-mode-0.0.5/yaml-mode.el")
 
 (defmacro disable-if-bound (fn)
   `(when (fboundp ',fn) (,fn -1)))
@@ -46,17 +56,11 @@
       (toggle-scroll-bar)
 ;       (menu-bar-mode) 
        (tool-bar-mode)
-    )
-
-; Windowing Config 
-
-(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
-(add-hook 'shell-mode-hook
-	  'ansi-color-for-comint-mode-on)
+       )
 
 (defun mac-setup ()
-  (setq HOME "/Users/jorge/"
-	CS "/Users/jorge/cs/"
+  (setq HOME "/Users/tyler/"
+	CS "/Users/tyler/"
 	;setq  mac-command-modifier 'meta
 	;ispell-program-name "aspell"
 	)
@@ -66,7 +70,10 @@
   )
 
 (defun linux-setup ()
+  (setq x-select-enable-clipboard t)
   (disable-if-bound menu-bar-mode)
+  (setq CS "/home/tyler/"
+	HOME "/home/tyler/")
   )
 
 (cond ((eq system-type 'darwin)
@@ -76,28 +83,54 @@
 
 (defun in-cs (extension) (concat CS extension))
 
+(defun add-lib (name)
+  (add-to-list 'load-path
+	       (concat HOME ".emacs.d/" name)))
+
+(add-lib ".")
+
+;;;;;;;;;;;;;;;;;
+; Windowing Config 
+
+(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
+(add-hook 'shell-mode-hook
+	  'ansi-color-for-comint-mode-on)
+
+(defun make-pretty ()
+  (add-lib "color-theme-6.6.0/")
+  (add-lib "color-theme-6.6.0/themes/")
+  (require 'color-theme)
+  (color-theme-initialize)
+  (if (eq system-type 'darwin)
+      (color-theme-gnome2)
+      (color-theme-calm-forest)))
+
+(make-pretty)
+
 ;*****************
 ; Libraries
 
-;(require 'magit)
-; paredit-- matching delimiter tool   
-(add-to-list 'load-path "/Users/jorge/.emacs.d/")
-
-;(autoload 'paredit-mode "paredit"
-;  "Minor mode for pseudo-structurally editing lisp code"
-;  t)
-
-;(add-hook 'lisp-mode-hook (lambda () (paredit-mode +1)))
-
 (mapc 'require
       '(cl
-	paren
+	multi-term
+	ibuffer 
+	tramp
+	sql
+	pg
 	))
 
-;; My emacs commands
+;; Server
+(require 'server)
+(server-start)
 
-(add-to-list 'load-path "~/cs/mython/sandbox")
-(require 'mython-mode)
+(require 'autopair)
+(autopair-global-mode t)
+
+(defun use-ido ()
+  (require 'ido)
+  (ido-mode t))
+
+(use-ido)
 
 ;**************
 ; Shortcuts
@@ -113,21 +146,22 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (setq auto-mode-alist
-      (append
-       (mkassoc '("\\.pl\\'" prolog-mode
- 		  "\\.txt\\'" auto-fill-mode
-		  "\\.my\\'" mython-mode
-		  "\\.py\\'" python-mode
+      (append (mkassoc '(
+		  "\\.pl\\'" prolog-mode
+ 		  "\\.txt$" auto-fill-mode
+		  ; "\\.my\\'" mython-mode
+		  "\\.py$" python-mode
+		  "\\.clj$'" clojure-mode
+		  "\\.el$" emacs-lisp-mode
+		  "\\.yml$" yaml-mode
 		  ))
-       auto-mode-alist))
+	      auto-mode-alist))
+
 
 ; the mapc approach has many weakness...
 ; (mapc (fn (bind) (global-set-key (car bind) (cadr bind)))
 ;                   (mkasso ...))
 (mapm global-set-key
-      ("\C-x\C-m" 'execute-extended-command)
-      ("\C-c\C-m" 'execute-extended-command)
-      ("\C-xm" 'execute-extended-command)
       ("\C-w" 'kill-word)
       ("\C-q" 'backward-kill-word)
       ("\C-x\C-k" 'kill-region)
@@ -142,7 +176,14 @@
       ("\C-cf" 'run-factor)
       ("\C-c\C-q" 'quote-prev) 
       ("\M-u" 'upcase-prev)
+      ("\M-c" 'cap-prev)
+      ((kbd "C-x C-b") 'ibuffer)
       )
+
+(global-unset-key "\C-z")
+
+(add-hook 'comint-mode-hook
+	  (fn () (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
 
 (defun disable (commands)
   (mapc (fn (x) (put x 'disabled t))
@@ -154,46 +195,47 @@
 ; *********
 ; Custom Commands
 
-(defun reload-emacs ()
-  (interactive)
-  (load-file (concat HOME ".emacs.d/init.el")))
+(defun recompile-emacs ()
+  (when (file-newer-then-file-p "~/.emacs.d/init.el" "~/.emacs.d/init.elc")
+    (byte-compile-file "~/.emacs.d/init.el")))
 
-(defun quote-prev ()
-  (interactive)
+(add-hook 'kill-emacs-hook 'recompile-emacs)
+
+(defmacro defi (name &rest body)
+  `(defun ,name () 
+     (interactive)
+     ,@body))
+
+(defi reload-emacs 
+  (load-file (concat HOME ".emacs.d/init.el"))
+  (color-theme-calm-forest)
+  (autopair-global-mode t))
+
+(defi dot
+  (find-file "~/.emacs.d/init.el"))
+
+(defi bash
+  (find-file "~/.bashrc"))
+
+(defi quote-prev
   (save-excursion
     (insert "\"")
     (backward-word)
     (insert "\""))
   (forward-char))
 
-(defun upcase-prev ()
-  (interactive)
+(defi upcase-prev
   (backward-word)
   (upcase-word 1))
+
+(defi cap-prev 
+  (backward-word)
+  (capitalize-word 1))
 
 (defun my-html-mode-hook ()
   (define-key html-mode-map (kbd "C-c C-;") 'sgml-close-tag))
 
 (add-hook 'html-mode-hook 'my-html-mode-hook)
-
-; don't work
-(defun untabify ()
-  (interactive)
-  (untabify (point-min) (point-max)))
-
-(defun untabify-buffer ()
-  (interactive)
-  (untabify (point-min) (point-max)))
-
-(defun indent-buffer ()
-  (interactive)
-  (indent-region (point-min) (point-max)))
-
-(defun cleanup-buffer ()
-  (interactive)
-  (indent-buffer)
-  (untabify-buffer)
-  (delete-trailing-whitespace))
 
 ;**************
 ; Factor Setting
@@ -212,7 +254,7 @@
 ;  (define-key fuel-mode-map (kbd "C-c i") 'fuel-refactor-inline-word)
     ))
 
-(use-factor)
+;(use-factor)
 
 ;----------------
 ; gnu smalltalk
@@ -225,7 +267,7 @@
   (push '("\\.st\\'" . smalltalk-mode)
 	auto-mode-alist))
 
-(use-smalltalk)
+;(use-smalltalk)
 
 ; *********
 ; slime
@@ -251,19 +293,17 @@
   (slime-setup '(slime-fancy slime-tramp slime-asdf))
   )
 
-(use-slime)
+;(use-slime)
 
 ;***************
 ; clojure-slime
 
 (defun use-clojure ()
 ; clojure-mode
-  (add-to-list 'load-path "~/cs/clojure/clojure-mode")
-
-  (require 'clojure-mode)
+ (require 'clojure-mode)
 
 ; swank-clojure
-  (add-to-list 'load-path "~/cs/clojure/swank-clojure/src/emacs")
+ (add-to-list 'load-path "~/cs/clojure/swank-clojure/src/emacs")
 
   (setq swank-clojure-jar-path "~/cs/clojure/clojure-core/clojure.jar"
 	swank-clojure-extra-classpaths
@@ -275,7 +315,7 @@
   (add-to-list 'slime-lisp-implementations '(sbcl ("sbcl")))
   )
 
-(use-clojure)
+;(use-clojure)
 
 ; M-- M-x slime ;; prompts which lisp to use, sbcl or clojure
 ; slime-quit-lisp to close
@@ -295,7 +335,7 @@
 ;; ;; Erlang Section
 (defun use-erlang ()
   (setq erlang-root-dir "/opt/local/lib/erlang")
-  (add-to-list 'load-path "/opt/local/lib/erlang/lib/tools-2.6.5.1/emacs")
+  (add-to-list 'load-path "/opt/local/lib/erlang/lib/tools-2.6.6/emacs")
   (add-to-list 'exec-path "/opt/local/lib/erlang/bin")
   (require 'erlang-start) 
   )
@@ -336,7 +376,7 @@
 		(define-key erlang-shell-mode-map (car spec) (cadr spec)))))
   )
 
-(use-distel)
+;(use-distel)
 
 ;;;;;;;;;;;;;
 ;; Frequencey commands
@@ -348,5 +388,38 @@
   (command-frequency-autosave-mode 1))
 
 (use-comm-freq)
+
+;; End Erlang
+
+(load "~/.emacs.d/pg.el")
+;; Customize this for you own use -- straight from emacs-fu
+(setq ibuffer-saved-filter-groups
+  '((("default"      
+            ("Org" ;; all org-related buffers
+              (mode . org-mode))  
+            ("Mail"
+              (or  ;; mail-related buffers
+               (mode . message-mode)
+               (mode . mail-mode)
+               ;; etc.; all your mail related modes
+               ))
+            ("iovation"
+              (filename . "~/clojure/iovation/"))
+            ("erlang"
+              (filename . "~/erlang/"))
+            ("Programming" ;; prog stuff not already in MyProjectX
+              (or
+                (mode . c-mode)
+                (mode . perl-mode)
+                (mode . python-mode)
+                (mode . emacs-lisp-mode)
+                ;; etc
+                )) 
+            ("ERC"   (mode . erc-mode))))))
+
+(add-hook 'ibuffer-mode-hook
+  (lambda ()
+    (ibuffer-switch-to-saved-filter-groups "default")))
+
 
 
