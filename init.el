@@ -152,12 +152,14 @@
 ; the mapc approach has many weakness...
 ; (mapc (fn (bind) (global-set-key (car bind) (cadr bind)))
 ;                   (mkasso ...))
+; this could be even better ...
 (mapm global-set-key
       ("\C-w" 'kill-word)
       ("\C-q" 'backward-kill-word)
       ("\C-x\C-k" 'kill-region)
       ("\C-xk" 'kill-region)
       ("\C-x\C-j" 'kill-this-buffer)
+      ("\C-xj" 'kill-this-buffer)
       ((kbd "C-.") 'other-frame)
       ((kbd "C-,") 'previous-multiframe-window)
       ("\C-x\C-u" 'undo)
@@ -171,7 +173,9 @@
       ((kbd "C-x C-b") 'ibuffer)
       )
 
-(global-unset-key "\C-z")
+(mapc 'global-unset-key '("\C-z"
+			  "\C-_"
+			  ))
 
 (add-hook 'comint-mode-hook
 	  (fn () (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
@@ -395,4 +399,4 @@
   (lambda ()
     (ibuffer-switch-to-saved-filter-groups "default")))
 
-(load-file "~/.emacs.d/local-config.el")
+(load-if-exists "~/.emacs.d/local-config.el")
