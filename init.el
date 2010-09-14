@@ -2,6 +2,8 @@
 ;; to find unbalanced parens -- go to the end of the file and type C-u C-M-u.
 ;; This will move you to the beginning of the first defun that is unbalanced. 
 
+;; See local-config.el for local configurations
+
 ;*****************
 ; Elisp Utils
 
@@ -123,6 +125,8 @@
   (require 'ido)
   (ido-mode t))
 
+(use-ido)
+
 ;**************
 ; Shortcuts
 
@@ -171,6 +175,9 @@
       ("\M-u" 'upcase-prev)
       ("\M-c" 'cap-prev)
       ((kbd "C-x C-b") 'ibuffer)
+      ("\M-a" 'windmove-up)
+      ("\M-z" 'windmove-down)
+      ("\M-k" 'zap-to-char)
       )
 
 (mapc 'global-unset-key '("\C-z"
@@ -196,6 +203,7 @@
 (add-hook 'kill-emacs-hook 'recompile-emacs)
 
 (defmacro defi (name &rest body)
+  "define standard interactive function"
   `(defun ,name () 
      (interactive)
      ,@body))
@@ -329,7 +337,7 @@
   (require 'erlang-start) 
   )
 
-(use-erlang)
+;(use-erlang)
 
 (defun use-distel ()
 ;; This is needed for Distel setup
@@ -400,3 +408,9 @@
     (ibuffer-switch-to-saved-filter-groups "default")))
 
 (load-if-exists "~/.emacs.d/local-config.el")
+
+(setq tag-build-completion-table t
+      tags-auto-read-changed-tag-files t
+      tags-file-name "/export/web/comp/stable/TAGS")
+
+
