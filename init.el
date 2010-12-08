@@ -37,18 +37,6 @@
 ;*******************
 ; Environments
 
-
-;;; This was installed by package-install.el.
-;;; This provides support for the package system and
-;;; interfacing with ELPA, the package archive.
-;;; Move this code earlier if you want to reference
-;;; packages in your .emacs.
-(when
-    (load
-     (expand-file-name "~/.emacs.d/elpa/package.el"))
-  (package-initialize))
-(load-if-exists "~/.emacs.d/elpa/yaml-mode-0.0.5/yaml-mode.el")
-
 (defmacro disable-if-bound (fn)
   `(when (fboundp ',fn) (,fn -1)))
 
@@ -112,19 +100,19 @@
 
 (mapc 'require
       '(cl
-	multi-term
+;	multi-term
 	ibuffer 
 	tramp
 	sql
-	pg
+;	pg
 	))
 
 ;; Server
 (require 'server)
 (server-start)
 
-(require 'autopair)
-(autopair-global-mode t)
+;(require 'autopair)
+;(autopair-global-mode t)
 
 (defun use-ido ()
   (require 'ido)
