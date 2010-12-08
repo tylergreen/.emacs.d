@@ -2,6 +2,8 @@
 ;; to find unbalanced parens -- go to the end of the file and type C-u C-M-u.
 ;; This will move you to the beginning of the first defun that is unbalanced. 
 
+;; See local-config.el for local configurations
+
 ;*****************
 ; Elisp Utils
 
@@ -47,8 +49,7 @@
        )
 
 (defun mac-setup ()
-  (setq HOME "/Users/tyler/"
-	CS "/Users/tyler/"
+  (setq CS "/Users/tyler/"
 	;setq  mac-command-modifier 'meta
 	;ispell-program-name "aspell"
 	)
@@ -60,8 +61,6 @@
 (defun linux-setup ()
   (setq x-select-enable-clipboard t)
   (disable-if-bound menu-bar-mode)
-  (setq CS "/home/tyler/"
-	HOME "/home/tyler/")
   )
 
 (cond ((eq system-type 'darwin)
@@ -73,7 +72,7 @@
 
 (defun add-lib (name)
   (add-to-list 'load-path
-	       (concat HOME ".emacs.d/" name)))
+	       (concat "~/.emacs.d/" name)))
 
 (add-lib ".")
 
@@ -104,7 +103,6 @@
 	ibuffer 
 	tramp
 	sql
-;	pg
 	))
 
 ;; Server
@@ -149,12 +147,14 @@
 ; the mapc approach has many weakness...
 ; (mapc (fn (bind) (global-set-key (car bind) (cadr bind)))
 ;                   (mkasso ...))
+; this could be even better ...
 (mapm global-set-key
       ("\C-w" 'kill-word)
       ("\C-q" 'backward-kill-word)
       ("\C-x\C-k" 'kill-region)
       ("\C-xk" 'kill-region)
       ("\C-x\C-j" 'kill-this-buffer)
+      ("\C-xj" 'kill-this-buffer)
       ((kbd "C-.") 'other-frame)
       ((kbd "C-,") 'previous-multiframe-window)
       ("\C-x\C-u" 'undo)
@@ -166,9 +166,14 @@
       ("\M-u" 'upcase-prev)
       ("\M-c" 'cap-prev)
       ((kbd "C-x C-b") 'ibuffer)
+      ("\M-a" 'windmove-up)
+      ("\M-z" 'windmove-down)
+      ("\M-k" 'zap-to-char)
       )
 
-(global-unset-key "\C-z")
+(mapc 'global-unset-key '("\C-z"
+			  "\C-_"
+			  ))
 
 (add-hook 'comint-mode-hook
 	  (fn () (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
@@ -184,19 +189,19 @@
 ; Custom Commands
 
 (defun recompile-emacs ()
-  (when (file-newer-then-file-p "~/.emacs.d/init.el" "~/.emacs.d/init.elc")
-    (byte-compile-file "~/.emacs.d/init.el")))
+  (byte-compile-file "~/.emacs.d/init.el"))
 
 (add-hook 'kill-emacs-hook 'recompile-emacs)
 
 (defmacro defi (name &rest body)
+  "define standard interactive function"
   `(defun ,name () 
      (interactive)
      ,@body))
 
 (defi reload-emacs 
-  (load-file (concat HOME ".emacs.d/init.el"))
-  (color-theme-calm-forest)
+  (byte-compile-file "~/.emacs.d/init.el")
+  (load-file "~/.emacs.d/init.elc")
   (autopair-global-mode t))
 
 (defi dot
@@ -242,8 +247,6 @@
 ;  (define-key fuel-mode-map (kbd "C-c i") 'fuel-refactor-inline-word)
     ))
 
-;(use-factor)
-
 ;----------------
 ; gnu smalltalk
 
@@ -254,8 +257,6 @@
 
   (push '("\\.st\\'" . smalltalk-mode)
 	auto-mode-alist))
-
-;(use-smalltalk)
 
 ; *********
 ; slime
@@ -280,8 +281,6 @@
   (slime-require :swank-listener-hooks)
   (slime-setup '(slime-fancy slime-tramp slime-asdf))
   )
-
-;(use-slime)
 
 ;***************
 ; clojure-slime
@@ -328,7 +327,7 @@
   (require 'erlang-start) 
   )
 
-(use-erlang)
+;(use-erlang)
 
 (defun use-distel ()
 ;; This is needed for Distel setup
@@ -379,7 +378,7 @@
 
 ;; End Erlang
 
-(load "~/.emacs.d/pg.el")
+
 ;; Customize this for you own use -- straight from emacs-fu
 (setq ibuffer-saved-filter-groups
   '((("default"      
@@ -409,5 +408,4 @@
   (lambda ()
     (ibuffer-switch-to-saved-filter-groups "default")))
 
-
-
+(load-if-exists "~/.emacs.d/local-config.el")
