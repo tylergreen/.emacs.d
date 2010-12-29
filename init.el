@@ -46,6 +46,7 @@
       (toggle-scroll-bar)
 ;       (menu-bar-mode) 
        (tool-bar-mode)
+       (osx-key-mode)
        )
 
 (defun mac-setup ()
@@ -142,6 +143,9 @@
 		  ))
 	      auto-mode-alist))
 
+(mapc 'global-unset-key '("\C-z"
+			  "\C-_"
+			  ))
 
 ; the mapc approach has many weakness...
 ; (mapc (fn (bind) (global-set-key (car bind) (cadr bind)))
@@ -164,16 +168,13 @@
       ("\C-c\C-q" 'quote-prev) 
       ("\M-u" 'upcase-prev)
       ("\M-c" 'cap-prev)
-      ((kbd "C-x C-b") 'ibuffer)
+;      ((kbd "C-x C-b") 'ibuffer)
       ("\M-a" 'windmove-up)
       ("\M-z" 'windmove-down)
       ("\M-k" 'zap-to-char)
-      ((kbd "C-;" 'dot))
+      ((kbd "C-;") 'rename-buffer)
       )
 
-(mapc 'global-unset-key '("\C-z"
-			  "\C-_"
-			  ))
 
 (add-hook 'comint-mode-hook
 	  (fn () (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
