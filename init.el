@@ -73,7 +73,6 @@
 (defun add-lib (name)
   (add-to-list 'load-path
 	       (concat "~/.emacs.d/" name)))
-
 (add-lib ".")
 
 ;;;;;;;;;;;;;;;;;
@@ -88,7 +87,7 @@
   (add-lib "color-theme-6.6.0/themes/")
   (require 'color-theme)
   (color-theme-initialize)
-  (if (eq system-type 'darwin)
+  (if window-system 
       (color-theme-gnome2)
       (color-theme-calm-forest)))
 
@@ -109,8 +108,8 @@
 (require 'server)
 (server-start)
 
-;(require 'autopair)
-;(autopair-global-mode t)
+(require 'autopair)
+(autopair-global-mode t)
 
 (defun use-ido ()
   (require 'ido)
@@ -169,6 +168,7 @@
       ("\M-a" 'windmove-up)
       ("\M-z" 'windmove-down)
       ("\M-k" 'zap-to-char)
+      ((kbd "C-;" 'dot))
       )
 
 (mapc 'global-unset-key '("\C-z"
@@ -322,12 +322,12 @@
 ;; ;; Erlang Section
 (defun use-erlang ()
   (setq erlang-root-dir "/opt/local/lib/erlang")
-  (add-to-list 'load-path "/opt/local/lib/erlang/lib/tools-2.6.6/emacs")
+  (add-to-list 'load-path "/opt/local/lib/erlang/lib/tools-2.6.5.1/emacs/")
   (add-to-list 'exec-path "/opt/local/lib/erlang/bin")
   (require 'erlang-start) 
   )
 
-;(use-erlang)
+(use-erlang)
 
 (defun use-distel ()
 ;; This is needed for Distel setup
@@ -405,7 +405,6 @@
             ("ERC"   (mode . erc-mode))))))
 
 (add-hook 'ibuffer-mode-hook
-  (lambda ()
-    (ibuffer-switch-to-saved-filter-groups "default")))
+  (fn () (ibuffer-switch-to-saved-filter-groups "default")))
 
 (load-if-exists "~/.emacs.d/local-config.el")
