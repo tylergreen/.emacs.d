@@ -39,7 +39,6 @@
 ;*******************
 ; Environments
 
-
 ;;; This was installed by package-install.el.
 ;;; This provides support for the package system and
 ;;; interfacing with ELPA, the package archive.
@@ -103,6 +102,9 @@
 
 (make-pretty)
 
+(unless (transient-mark-mode)
+  (transient-mark-mode))
+
 ;*****************
 ; Libraries
 
@@ -152,37 +154,43 @@
 		  ))
 	      auto-mode-alist))
 
+;; classic lisp macro example
+(defmacro global-keymap (&rest bindings)
+  `(progn ,@(mapcar (fn (pair)
+		    `(global-set-key (kbd ,(car pair)) ',(cdr pair)))
+		(mkassoc bindings))))
 
-; the mapc approach has many weakness...
-; (mapc (fn (bind) (global-set-key (car bind) (cadr bind)))
-;                   (mkasso ...))
-; this could be even better ...
-(mapm global-set-key
-      ("\C-w" 'kill-word)
-      ("\C-q" 'backward-kill-word)
-      ("\C-x\C-k" 'kill-region)
-      ("\C-xk" 'kill-region)
-      ("\C-x\C-j" 'kill-this-buffer)
-      ("\C-xj" 'kill-this-buffer)
-      ((kbd "C-.") 'other-frame)
-      ((kbd "C-,") 'previous-multiframe-window)
-      ("\C-x\C-u" 'undo)
-      ("\C-x\C-n" 'next-line)
-      ("\M-g" 'goto-line)
-      ("\M-j" 'shell)
-      ("\C-cf" 'run-factor)
-      ("\C-c\C-q" 'quote-prev) 
-      ("\M-u" 'upcase-prev)
-      ("\M-c" 'cap-prev)
-      ((kbd "C-x C-b") 'ibuffer)
-      ("\M-a" 'windmove-up)
-      ("\M-z" 'windmove-down)
-      ("\M-k" 'zap-to-char)
-      )
+(global-keymap 
+ "C-q" backward-kill-word
+ "C-x C-k" kill-region
+ "C-x k" kill-region
+ "C-x C-j" kill-this-buffer
+ "C-x j" kill-this-buffer
+ "C-." other-frame
+ "C-," previous-multiframe-window
+ "C-x C-u" undo
+ "C-x C-n" next-line
+ "M-g" goto-line
+ "M-j" shell
+ "C-c f" run-factor
+ "C-c C-q" quote-prev
+ "M-u" upcase-prev
+ "M-c" cap-prev
+ "C-x C-b" ibuffer
+ "M-a" windmove-up
+ "M-z" windmove-down
+ "M-k" zap-to-char
+ "C-z" kill-ring-save
+ )
 
-(mapc 'global-unset-key '("\C-z"
-			  "\C-_"
-			  ))
+(defun datahand ()
+    (global-keymap
+	"M-SPC" set-mark-command
+	"C-d" backward-char
+	"C-;" rename-buffer
+	))
+
+(datahand)
 
 (add-hook 'comint-mode-hook
 	  (fn () (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
@@ -414,3 +422,17 @@
       tags-file-name "/export/web/comp/stable/TAGS")
 
 
+
+
+;;; This was installed by package-install.el.
+;;; This provides support for the package system and
+;;; interfacing with ELPA, the package archive.
+;;; Move this code earlier if you want to reference
+;;; packages in your .emacs.
+(when
+    (load
+     (expand-file-name "~/.emacs.d/elpa/package.el"))
+  (package-initialize))
+
+
+(load-file "~/.emacs.d/enova.el")
