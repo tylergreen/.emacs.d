@@ -28,6 +28,7 @@
   "apply a macro to each list in DEFN"
   `(progn ,@(mapcar (fn (x) (cons macro x)) defs)))
 
+
 ; REMEMBER: nconc-- last cdr of each of the lists is changed to
 ; refer to the following list.
 ; The last of the lists is not altered
@@ -58,6 +59,7 @@
       (toggle-scroll-bar)
 ;       (menu-bar-mode) 
        (tool-bar-mode)
+       (osx-key-mode)
        )
 
 (defun mac-setup ()
@@ -83,7 +85,10 @@
   (add-to-list 'load-path
 	       (concat "~/.emacs.d/" name)))
 
-(add-lib ".")
+(mapc 'add-lib '(
+		 "."
+		 "ocaml.emacs"
+		 ))
 
 ;;;;;;;;;;;;;;;;;
 ; Windowing Config 
@@ -152,7 +157,6 @@
 		  ))
 	      auto-mode-alist))
 
-
 ; the mapc approach has many weakness...
 ; (mapc (fn (bind) (global-set-key (car bind) (cadr bind)))
 ;                   (mkasso ...))
@@ -168,7 +172,7 @@
       ((kbd "C-,") 'previous-multiframe-window)
       ("\C-x\C-u" 'undo)
       ("\C-x\C-n" 'next-line)
-      ("\M-g" 'goto-line)
+;      ("\M-;" 'goto-line)
       ("\M-j" 'shell)
       ("\C-cf" 'run-factor)
       ("\C-c\C-q" 'quote-prev) 
@@ -178,10 +182,11 @@
       ("\M-a" 'windmove-up)
       ("\M-z" 'windmove-down)
       ("\M-k" 'zap-to-char)
+      ((kbd "M-SPC" ) 'cua-set-mark)
+      ((kbd "C-z") 'kill-ring-save)
       )
 
-(mapc 'global-unset-key '("\C-z"
-			  "\C-_"
+(mapc 'global-unset-key '( "\C-_"
 			  ))
 
 (add-hook 'comint-mode-hook
@@ -337,7 +342,7 @@
   (require 'erlang-start) 
   )
 
-;(use-erlang)
+(use-erlang)
 
 (defun use-distel ()
 ;; This is needed for Distel setup
@@ -350,7 +355,7 @@
   (distel-setup)
   
   (add-hook 'erlang-mode-hook
-	    (lambda ()
+	    (fn ()
 	      ;; when starting an Erlang shell in Emacs, default in the node name
 	      (setq inferior-erlang-machine-options '("-sname" "emacs"))
 	      ;; add Erlang functions to an imenu menu
@@ -367,7 +372,7 @@
     "Additional keys to bind when in Erlang shell.")
 
   (add-hook 'erlang-shell-mode-hook
-	    (lambda ()
+	    (fn ()
       ;; add some Distel bindings to the Erlang shell
 	      (dolist (spec distel-shell-keys)
 		(define-key erlang-shell-mode-map (car spec) (cadr spec)))))
@@ -404,7 +409,7 @@
             ("ERC"   (mode . erc-mode))))))
 
 (add-hook 'ibuffer-mode-hook
-  (lambda ()
+  (fn ()
     (ibuffer-switch-to-saved-filter-groups "default")))
 
 (load-if-exists "~/.emacs.d/local-config.el")
@@ -412,5 +417,12 @@
 (setq tag-build-completion-table t
       tags-auto-read-changed-tag-files t
       tags-file-name "/export/web/comp/stable/TAGS")
+
+;; autocomplete
+
+(require 'auto-complete-config)
+(add-to-list 'ac-dictionary-directories "/Users/tyler/.emacs.d/ac-dict")
+(ac-config-default)
+(setf ac-delay nil)  ;; turn off by default
 
 
