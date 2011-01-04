@@ -39,6 +39,7 @@
 ;*******************
 ; Environments
 
+<<<<<<< HEAD:init.el
 ;;; This was installed by package-install.el.
 ;;; This provides support for the package system and
 ;;; interfacing with ELPA, the package archive.
@@ -57,6 +58,7 @@
       (toggle-scroll-bar)
 ;       (menu-bar-mode) 
        (tool-bar-mode)
+       (osx-key-mode)
        )
 
 (defun mac-setup ()
@@ -64,6 +66,9 @@
 	;setq  mac-command-modifier 'meta
 	;ispell-program-name "aspell"
 	)
+  (add-to-list 'load-path "/Users/jorge/cs/emacs")
+  (require 'tea-time)
+
   )
 
 (defun linux-setup ()
@@ -81,7 +86,6 @@
 (defun add-lib (name)
   (add-to-list 'load-path
 	       (concat "~/.emacs.d/" name)))
-
 (add-lib ".")
 
 ;;;;;;;;;;;;;;;;;
@@ -96,7 +100,7 @@
   (add-lib "color-theme-6.6.0/themes/")
   (require 'color-theme)
   (color-theme-initialize)
-  (if (eq system-type 'darwin)
+  (if window-system 
       (color-theme-gnome2)
       (color-theme-calm-forest)))
 
@@ -110,7 +114,7 @@
 
 (mapc 'require
       '(cl
-	multi-term
+;	multi-term
 	ibuffer 
 	tramp
 	sql
@@ -154,6 +158,7 @@
 		  ))
 	      auto-mode-alist))
 
+<<<<<<< HEAD:init.el
 ;; classic lisp macro example
 (defmacro global-keymap (&rest bindings)
   `(progn ,@(mapcar (fn (pair)
@@ -191,6 +196,38 @@
 	))
 
 (datahand)
+=======
+(mapc 'global-unset-key '("\C-z"
+			  "\C-_"
+			  ))
+
+; the mapc approach has many weakness...
+; (mapc (fn (bind) (global-set-key (car bind) (cadr bind)))
+;                   (mkasso ...))
+; this could be even better ...
+(mapm global-set-key
+      ("\C-w" 'kill-word)
+      ("\C-q" 'backward-kill-word)
+      ("\C-x\C-k" 'kill-region)
+      ("\C-xk" 'kill-region)
+      ("\C-x\C-j" 'kill-this-buffer)
+      ("\C-xj" 'kill-this-buffer)
+      ((kbd "C-.") 'other-frame)
+      ((kbd "C-,") 'previous-multiframe-window)
+      ("\C-x\C-u" 'undo)
+      ("\C-x\C-n" 'next-line)
+      ("\M-g" 'goto-line)
+      ("\M-j" 'shell)
+      ("\C-cf" 'run-factor)
+      ("\C-c\C-q" 'quote-prev) 
+      ("\M-u" 'upcase-prev)
+      ("\M-c" 'cap-prev)
+;      ((kbd "C-x C-b") 'ibuffer)
+      ("\M-a" 'windmove-up)
+      ("\M-z" 'windmove-down)
+      ("\M-k" 'zap-to-char)
+      ((kbd "C-;") 'rename-buffer)
+      )
 
 (add-hook 'comint-mode-hook
 	  (fn () (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
@@ -251,18 +288,18 @@
 ; Factor Setting
 
 (defun use-factor ()
-  (setq fbase (in-cs "factor/"))
+  (let ((fbase (in-cs "factor/")))
 					; fuel
-  (load-file (concat fbase "misc/fuel/fu.el"))
-  (setq fuel-listener-factor-binary (concat fbase "factor")
-	fuel-listener-factor-image (concat fbase "factor.image"))
+    (load-file (concat fbase "misc/fuel/fu.el"))
+    (setq fuel-listener-factor-binary (concat fbase "factor")
+	  fuel-listener-factor-image (concat fbase "factor.image"))
 
   ;; custom fuel keys
 ;  (define-key fuel-mode-map (kbd "C-c p") 'fuel-eval-definition)
 ;  (define-key fuel-mode-map (kbd "C-c u") 'fuel-show-callers)
 ;  (define-key fuel-mode-map (kbd "C-c o") 'fuel-show-callees)
 ;  (define-key fuel-mode-map (kbd "C-c i") 'fuel-refactor-inline-word)
-  )
+    ))
 
 ;----------------
 ; gnu smalltalk
@@ -336,16 +373,15 @@
 
 ;(use-zen)
   
-
 ;; ;; Erlang Section
 (defun use-erlang ()
   (setq erlang-root-dir "/opt/local/lib/erlang")
-  (add-to-list 'load-path "/opt/local/lib/erlang/lib/tools-2.6.6/emacs")
+  (add-to-list 'load-path "/opt/local/lib/erlang/lib/tools-2.6.5.1/emacs/")
   (add-to-list 'exec-path "/opt/local/lib/erlang/bin")
   (require 'erlang-start) 
   )
 
-;(use-erlang)
+(use-erlang)
 
 (defun use-distel ()
 ;; This is needed for Distel setup
@@ -383,6 +419,17 @@
 
 ;(use-distel)
 
+;;;;;;;;;;;;;
+;; Frequencey commands
+
+(defun use-comm-freq ()
+  (require 'command-frequency)
+  (command-frequency-table-load)
+  (command-frequency-mode 1)
+  (command-frequency-autosave-mode 1))
+
+(use-comm-freq)
+
 ;; End Erlang
 
 
@@ -412,17 +459,9 @@
             ("ERC"   (mode . erc-mode))))))
 
 (add-hook 'ibuffer-mode-hook
-  (lambda ()
-    (ibuffer-switch-to-saved-filter-groups "default")))
+  (fn () (ibuffer-switch-to-saved-filter-groups "default")))
 
 (load-if-exists "~/.emacs.d/local-config.el")
-
-(setq tag-build-completion-table t
-      tags-auto-read-changed-tag-files t
-      tags-file-name "/export/web/comp/stable/TAGS")
-
-
-
 
 ;;; This was installed by package-install.el.
 ;;; This provides support for the package system and
@@ -435,4 +474,3 @@
   (package-initialize))
 
 
-(load-file "~/.emacs.d/enova.el")
