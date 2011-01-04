@@ -39,7 +39,6 @@
 ;*******************
 ; Environments
 
-<<<<<<< HEAD:init.el
 ;;; This was installed by package-install.el.
 ;;; This provides support for the package system and
 ;;; interfacing with ELPA, the package archive.
@@ -158,12 +157,15 @@
 		  ))
 	      auto-mode-alist))
 
-<<<<<<< HEAD:init.el
 ;; classic lisp macro example
 (defmacro global-keymap (&rest bindings)
   `(progn ,@(mapcar (fn (pair)
 		    `(global-set-key (kbd ,(car pair)) ',(cdr pair)))
 		(mkassoc bindings))))
+
+(mapc 'global-unset-key '("\C-z"
+			  "\C-_"
+			  ))
 
 (global-keymap 
  "C-q" backward-kill-word
@@ -196,38 +198,6 @@
 	))
 
 (datahand)
-=======
-(mapc 'global-unset-key '("\C-z"
-			  "\C-_"
-			  ))
-
-; the mapc approach has many weakness...
-; (mapc (fn (bind) (global-set-key (car bind) (cadr bind)))
-;                   (mkasso ...))
-; this could be even better ...
-(mapm global-set-key
-      ("\C-w" 'kill-word)
-      ("\C-q" 'backward-kill-word)
-      ("\C-x\C-k" 'kill-region)
-      ("\C-xk" 'kill-region)
-      ("\C-x\C-j" 'kill-this-buffer)
-      ("\C-xj" 'kill-this-buffer)
-      ((kbd "C-.") 'other-frame)
-      ((kbd "C-,") 'previous-multiframe-window)
-      ("\C-x\C-u" 'undo)
-      ("\C-x\C-n" 'next-line)
-      ("\M-g" 'goto-line)
-      ("\M-j" 'shell)
-      ("\C-cf" 'run-factor)
-      ("\C-c\C-q" 'quote-prev) 
-      ("\M-u" 'upcase-prev)
-      ("\M-c" 'cap-prev)
-;      ((kbd "C-x C-b") 'ibuffer)
-      ("\M-a" 'windmove-up)
-      ("\M-z" 'windmove-down)
-      ("\M-k" 'zap-to-char)
-      ((kbd "C-;") 'rename-buffer)
-      )
 
 (add-hook 'comint-mode-hook
 	  (fn () (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
@@ -237,7 +207,8 @@
 	commands))
 
 (disable '(upcase-region
-	   downcase-region))
+	   downcase-region
+	   ))
 
 ; *********
 ; Custom Commands
@@ -431,7 +402,6 @@
 (use-comm-freq)
 
 ;; End Erlang
-
 
 ;; Customize this for you own use -- straight from emacs-fu
 (setq ibuffer-saved-filter-groups
