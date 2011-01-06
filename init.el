@@ -39,16 +39,31 @@
 ;*******************
 ; Environments
 
-;;; This was installed by package-install.el.
-;;; This provides support for the package system and
-;;; interfacing with ELPA, the package archive.
-;;; Move this code earlier if you want to reference
-;;; packages in your .emacs.
-(when
-    (load
-     (expand-file-name "~/.emacs.d/elpa/package.el"))
-  (package-initialize))
+(defun install-elpa ()
+  (let ((buffer (url-retrieve-synchronously
+		 "http://tromey.com/elpa/package-install.el")))
+    (save-excursion
+      (set-buffer buffer)
+      (goto-char (point-min))
+      (re-search-forward "^$" nil 'move)
+      (eval-region (point) (point-max))
+      (kill-buffer (current-buffer)))))
+
+(defun elpa-installedp ()
+  (fboundp 'package-list-packages))
+
+(if (elpa-installedp)
+    (when (load
+	   (expand-file-name "~/.emacs.d/elpa/package.el"))
+      (package-initialize))
+  (install-elpa))
+
 (load-if-exists "~/.emacs.d/elpa/yaml-mode-0.0.5/yaml-mode.el")
+
+;***************
+; Customizations
+
+(setq make-backup-files nil)
 
 (defmacro disable-if-bound (fn)
   `(when (fboundp ',fn) (,fn -1)))
@@ -61,13 +76,6 @@
        )
 
 (defun mac-setup ()
-  (setq CS "/Users/tyler/"
-	;setq  mac-command-modifier 'meta
-	;ispell-program-name "aspell"
-	)
-  (add-to-list 'load-path "/Users/jorge/cs/emacs")
-  (require 'tea-time)
-
   )
 
 (defun linux-setup ()
@@ -352,8 +360,6 @@
   (require 'erlang-start) 
   )
 
-(use-erlang)
-
 (defun use-distel ()
 ;; This is needed for Distel setup
   (let ((distel-dir "/Users/jorge/cs/erlang/distel/elisp"))
@@ -399,7 +405,6 @@
   (command-frequency-mode 1)
   (command-frequency-autosave-mode 1))
 
-(use-comm-freq)
 
 ;; End Erlang
 
@@ -445,8 +450,10 @@
 
 ;; autocomplete
 
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories "/Users/tyler/.emacs.d/ac-dict")
-(ac-config-default)
-(setf ac-delay nil)  ;; turn off by default
+(defun use-auto-complete ()
+  (require 'auto-complete-config)
+  (add-to-list 'ac-dictionary-directories "/Users/tyler/.emacs.d/ac-dict")
+  (ac-config-default)
+  (setf ac-delay nil)  ;; turn off by default
+)
 
