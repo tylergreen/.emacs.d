@@ -61,13 +61,6 @@
        )
 
 (defun mac-setup ()
-  (setq CS "/Users/tyler/"
-	;setq  mac-command-modifier 'meta
-	;ispell-program-name "aspell"
-	)
-  (add-to-list 'load-path "/Users/jorge/cs/emacs")
-  (require 'tea-time)
-
   )
 
 (defun linux-setup ()
@@ -428,7 +421,7 @@
 ;; autocomplete
 
 (require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories "/Users/tyler/.emacs.d/ac-dict")
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
 (ac-config-default)
 (setf ac-delay nil)  ;; turn off by default
 
