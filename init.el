@@ -199,7 +199,6 @@
 
 (datahand)
 
->>>>>>> 52fc6464c791bf53e5bf1f9b8af7393dda78e869
 (add-hook 'comint-mode-hook
 	  (fn () (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
 
@@ -328,23 +327,9 @@
   (add-to-list 'slime-lisp-implementations '(sbcl ("sbcl")))
   )
 
-;(use-clojure)
-
 ; M-- M-x slime ;; prompts which lisp to use, sbcl or clojure
 ; slime-quit-lisp to close
 
-;**************
-; Zen Coding
-
-(defun use-zen ()
-  (add-to-list 'load-path "~/cs/emacs/zencoding/")
-  (require 'zencoding-mode)
-  (add-hook 'sgml-mode-hook 'zencoding-mode)
-;  (define-key zencoding-mode-keymap  "\C-c\C-e" 'zencoding-expand-line)
-)
-
-;(use-zen)
-  
 ;; ;; Erlang Section
 (defun use-erlang ()
   (setq erlang-root-dir "/opt/local/lib/erlang")
@@ -352,8 +337,6 @@
   (add-to-list 'exec-path "/opt/local/lib/erlang/bin")
   (require 'erlang-start) 
   )
-
-(use-erlang)
 
 (defun use-distel ()
 ;; This is needed for Distel setup
@@ -388,8 +371,6 @@
 	      (dolist (spec distel-shell-keys)
 		(define-key erlang-shell-mode-map (car spec) (cadr spec)))))
   )
-
-;(use-distel)
 
 ;;;;;;;;;;;;;
 ;; Frequencey commands
