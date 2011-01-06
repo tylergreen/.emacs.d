@@ -335,23 +335,9 @@
   (add-to-list 'slime-lisp-implementations '(sbcl ("sbcl")))
   )
 
-;(use-clojure)
-
 ; M-- M-x slime ;; prompts which lisp to use, sbcl or clojure
 ; slime-quit-lisp to close
 
-;**************
-; Zen Coding
-
-(defun use-zen ()
-  (add-to-list 'load-path "~/cs/emacs/zencoding/")
-  (require 'zencoding-mode)
-  (add-hook 'sgml-mode-hook 'zencoding-mode)
-;  (define-key zencoding-mode-keymap  "\C-c\C-e" 'zencoding-expand-line)
-)
-
-;(use-zen)
-  
 ;; ;; Erlang Section
 (defun use-erlang ()
   (setq erlang-root-dir "/opt/local/lib/erlang")
@@ -394,8 +380,6 @@
 		(define-key erlang-shell-mode-map (car spec) (cadr spec)))))
   )
 
-;(use-distel)
-
 ;;;;;;;;;;;;;
 ;; Frequencey commands
 
@@ -404,7 +388,6 @@
   (command-frequency-table-load)
   (command-frequency-mode 1)
   (command-frequency-autosave-mode 1))
-
 
 ;; End Erlang
 
@@ -450,10 +433,9 @@
 
 ;; autocomplete
 
-(defun use-auto-complete ()
-  (require 'auto-complete-config)
-  (add-to-list 'ac-dictionary-directories "/Users/tyler/.emacs.d/ac-dict")
-  (ac-config-default)
-  (setf ac-delay nil)  ;; turn off by default
-)
+(require 'auto-complete-config)
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
+(ac-config-default)
+(setf ac-delay nil)  ;; turn off by default
+
 
