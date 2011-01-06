@@ -39,6 +39,17 @@
 ;*******************
 ; Environments
 
+;;; This was installed by package-install.el.
+;;; This provides support for the package system and
+;;; interfacing with ELPA, the package archive.
+;;; Move this code earlier if you want to reference
+;;; packages in your .emacs.
+(when
+    (load
+     (expand-file-name "~/.emacs.d/elpa/package.el"))
+  (package-initialize))
+(load-if-exists "~/.emacs.d/elpa/yaml-mode-0.0.5/yaml-mode.el")
+
 (defmacro disable-if-bound (fn)
   `(when (fboundp ',fn) (,fn -1)))
 
@@ -74,6 +85,7 @@
 (defun add-lib (name)
   (add-to-list 'load-path
 	       (concat "~/.emacs.d/" name)))
+
 (add-lib ".")
 
 ;;;;;;;;;;;;;;;;;
@@ -93,6 +105,9 @@
       (color-theme-calm-forest)))
 
 (make-pretty)
+
+(unless (transient-mark-mode)
+  (transient-mark-mode))
 
 ;*****************
 ; Libraries
@@ -143,40 +158,48 @@
 		  ))
 	      auto-mode-alist))
 
-(mapc 'global-unset-key '("\C-z"
-			  "\C-_"
+;; classic lisp macro example
+(defmacro global-keymap (&rest bindings)
+  `(progn ,@(mapcar (fn (pair)
+		    `(global-set-key (kbd ,(car pair)) ',(cdr pair)))
+		(mkassoc bindings))))
+
+(mapc 'global-unset-key '( "\C-_"
 			  ))
 
-; the mapc approach has many weakness...
-; (mapc (fn (bind) (global-set-key (car bind) (cadr bind)))
-;                   (mkasso ...))
-; this could be even better ...
-(mapm global-set-key
-      ("\C-w" 'kill-word)
-      ("\C-q" 'backward-kill-word)
-      ("\C-x\C-k" 'kill-region)
-      ("\C-xk" 'kill-region)
-      ("\C-x\C-j" 'kill-this-buffer)
-      ("\C-xj" 'kill-this-buffer)
-      ((kbd "C-.") 'other-frame)
-      ((kbd "C-,") 'previous-multiframe-window)
-      ((kbd "C-z") 'cua-copy-region)
-      ("\C-x\C-u" 'undo)
-      ("\C-x\C-n" 'next-line)
-      ("\M-g" 'goto-line)
-      ("\M-j" 'shell)
-      ("\C-cf" 'run-factor)
-      ("\C-c\C-q" 'quote-prev) 
-      ("\M-u" 'upcase-prev)
-      ("\M-c" 'cap-prev)
-      ("\M-SPC" 'cua-set-mark)
-;      ((kbd "C-x C-b") 'ibuffer)
-      ("\M-a" 'windmove-up)
-      ("\M-z" 'windmove-down)
-      ("\M-k" 'zap-to-char)
-      ((kbd "C-;") 'rename-buffer)
-      )
+(global-keymap 
+ "C-w" kill-word
+ "C-q" backward-kill-word
+ "C-x C-k" kill-region
+ "C-x k" kill-region
+ "C-x C-j" kill-this-buffer
+ "C-x j" kill-this-buffer
+ "C-." other-frame
+ "C-," previous-multiframe-window
+ "C-x C-u" undo
+ "C-x C-n" next-line
+ "M-g" goto-line
+ "M-j" shell
+ "C-c f" run-factor
+ "C-c C-q" quote-prev
+ "M-u" upcase-prev
+ "M-c" cap-prev
+ "C-x C-b" ibuffer
+ "M-a" windmove-up
+ "M-z" windmove-down
+ "M-k" zap-to-char
+ "C-z" kill-ring-save
+ )
 
+(defun datahand ()
+    (global-keymap
+	"M-SPC" set-mark-command
+	"C-;" rename-buffer
+	))
+
+(datahand)
+
+>>>>>>> 52fc6464c791bf53e5bf1f9b8af7393dda78e869
 (add-hook 'comint-mode-hook
 	  (fn () (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
 
@@ -185,21 +208,22 @@
 	commands))
 
 (disable '(upcase-region
-	   downcase-region))
+	   downcase-region
+	   ))
 
 ; *********
 ; Custom Commands
-
-(defun recompile-emacs ()
-  (byte-compile-file "~/.emacs.d/init.el"))
-
-(add-hook 'kill-emacs-hook 'recompile-emacs)
 
 (defmacro defi (name &rest body)
   "define standard interactive function"
   `(defun ,name () 
      (interactive)
      ,@body))
+
+(defi recompile-emacs ()
+  (byte-compile-file "~/.emacs.d/init.el"))
+
+(add-hook 'kill-emacs-hook 'recompile-emacs)
 
 (defi reload-emacs 
   (byte-compile-file "~/.emacs.d/init.el")
@@ -342,7 +366,7 @@
   (distel-setup)
   
   (add-hook 'erlang-mode-hook
-	    (lambda ()
+	    (fn ()
 	      ;; when starting an Erlang shell in Emacs, default in the node name
 	      (setq inferior-erlang-machine-options '("-sname" "emacs"))
 	      ;; add Erlang functions to an imenu menu
@@ -359,7 +383,7 @@
     "Additional keys to bind when in Erlang shell.")
 
   (add-hook 'erlang-shell-mode-hook
-	    (lambda ()
+	    (fn ()
       ;; add some Distel bindings to the Erlang shell
 	      (dolist (spec distel-shell-keys)
 		(define-key erlang-shell-mode-map (car spec) (cadr spec)))))
@@ -379,7 +403,6 @@
 (use-comm-freq)
 
 ;; End Erlang
-
 
 ;; Customize this for you own use -- straight from emacs-fu
 (setq ibuffer-saved-filter-groups
@@ -410,3 +433,21 @@
   (fn () (ibuffer-switch-to-saved-filter-groups "default")))
 
 (load-if-exists "~/.emacs.d/local-config.el")
+
+;;; This was installed by package-install.el.
+;;; This provides support for the package system and
+;;; interfacing with ELPA, the package archive.
+;;; Move this code earlier if you want to reference
+;;; packages in your .emacs.
+(when
+    (load
+     (expand-file-name "~/.emacs.d/elpa/package.el"))
+  (package-initialize))
+
+;; autocomplete
+
+(require 'auto-complete-config)
+(add-to-list 'ac-dictionary-directories "/Users/tyler/.emacs.d/ac-dict")
+(ac-config-default)
+(setf ac-delay nil)  ;; turn off by default
+
