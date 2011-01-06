@@ -374,8 +374,6 @@
   (command-frequency-mode 1)
   (command-frequency-autosave-mode 1))
 
-(use-comm-freq)
-
 ;; End Erlang
 
 ;; Customize this for you own use -- straight from emacs-fu
