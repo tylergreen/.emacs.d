@@ -160,6 +160,7 @@
       ("\C-xj" 'kill-this-buffer)
       ((kbd "C-.") 'other-frame)
       ((kbd "C-,") 'previous-multiframe-window)
+      ((kbd "C-z") 'cua-copy-region)
       ("\C-x\C-u" 'undo)
       ("\C-x\C-n" 'next-line)
       ("\M-g" 'goto-line)
@@ -168,13 +169,13 @@
       ("\C-c\C-q" 'quote-prev) 
       ("\M-u" 'upcase-prev)
       ("\M-c" 'cap-prev)
+      ("\M-SPC" 'cua-set-mark)
 ;      ((kbd "C-x C-b") 'ibuffer)
       ("\M-a" 'windmove-up)
       ("\M-z" 'windmove-down)
       ("\M-k" 'zap-to-char)
       ((kbd "C-;") 'rename-buffer)
       )
-
 
 (add-hook 'comint-mode-hook
 	  (fn () (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
