@@ -70,10 +70,9 @@
 
 (mapm disable-if-bound
       (toggle-scroll-bar)
-;       (menu-bar-mode) 
-       (tool-bar-mode)
-       (osx-key-mode)
-       )
+      (tool-bar-mode)
+      (osx-key-mode)
+      )
 
 (defun mac-setup ()
   )
@@ -95,7 +94,7 @@
 	       (concat "~/.emacs.d/" name)))
 
 (add-lib ".")
-
+(add-lib "./emacs-utils")
 ;;;;;;;;;;;;;;;;;
 ; Windowing Config 
 
@@ -126,11 +125,12 @@
 	ibuffer 
 	tramp
 	sql
+	with-stack
 	))
 
 ;; Server
 (require 'server)
-(server-start)
+(unless (server-running-p) (server-start))
 
 (require 'autopair)
 (autopair-global-mode t)
@@ -197,6 +197,7 @@
  "M-z" windmove-down
  "M-k" zap-to-char
  "C-z" kill-ring-save
+ 
  )
 
 (defun datahand ()
@@ -267,7 +268,7 @@
 ; Factor Setting
 
 (defun use-factor ()
-  (let ((fbase (in-cs "factor/")))
+  (let ((fbase "~/cs/factor/"))
 					; fuel
     (load-file (concat fbase "misc/fuel/fu.el"))
     (setq fuel-listener-factor-binary (concat fbase "factor")
@@ -437,5 +438,8 @@
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
 (ac-config-default)
 (setf ac-delay nil)  ;; turn off by default
+
+
+
 
 
