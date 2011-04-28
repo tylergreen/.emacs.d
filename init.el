@@ -93,8 +93,14 @@
   (add-to-list 'load-path
 	       (concat "~/.emacs.d/" name)))
 
-(add-lib ".")
-(add-lib "./emacs-utils")
+; do this properly- not portable
+
+
+(mapc 'add-lib '("."
+		"emacs-utils/"
+		"erlang/"
+		))
+
 ;;;;;;;;;;;;;;;;;
 ; Windowing Config 
 
@@ -126,6 +132,7 @@
 	tramp
 	sql
 	with-stack
+	erlang
 	))
 
 ;; Server
@@ -193,11 +200,12 @@
  "M-u" upcase-prev
  "M-c" cap-prev
  "C-x C-b" ibuffer
- "M-a" windmove-up
- "M-z" windmove-down
+ "M-u" windmove-up
+ "M-m" windmove-down
+ "M-h" windmove-left
+ "M-'" windmove-right
  "M-k" zap-to-char
  "C-z" kill-ring-save
- 
  )
 
 (defun datahand ()
@@ -208,8 +216,7 @@
 
 (datahand)
 
-(add-hook 'comint-mode-hook
-	  (fn () (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
+(add-hook 'comint-mode- (fn () (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
 
 (defun disable (commands)
   (mapc (fn (x) (put x 'disabled t))
@@ -338,14 +345,6 @@
 
 ; M-- M-x slime ;; prompts which lisp to use, sbcl or clojure
 ; slime-quit-lisp to close
-
-;; ;; Erlang Section
-(defun use-erlang ()
-  (setq erlang-root-dir "/opt/local/lib/erlang")
-  (add-to-list 'load-path "/opt/local/lib/erlang/lib/tools-2.6.5.1/emacs/")
-  (add-to-list 'exec-path "/opt/local/lib/erlang/bin")
-  (require 'erlang-start) 
-  )
 
 (defun use-distel ()
 ;; This is needed for Distel setup
