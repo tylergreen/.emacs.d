@@ -131,13 +131,9 @@
 	ibuffer 
 	tramp
 	sql
-	with-stack
-	erlang
+;	with-stack
+;	erlang
 	))
-
-;; Server
-(require 'server)
-(unless (server-running-p) (server-start))
 
 (require 'autopair)
 (autopair-global-mode t)
@@ -430,15 +426,4 @@
     (load
      (expand-file-name "~/.emacs.d/elpa/package.el"))
   (package-initialize))
-
-;; autocomplete
-
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
-(ac-config-default)
-(setf ac-delay nil)  ;; turn off by default
-
-
-
-
 
