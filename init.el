@@ -136,8 +136,12 @@
 ;	erlang
 	))
 
-(require 'autopair)
-(autopair-global-mode t)
+(if (= 24 emacs-major-version )
+    (electric-pair-mode)
+  (progn (require 'autopair)
+	 (autopair-global-mode t)))
+
+
 
 (defun use-ido ()
   (require 'ido)
@@ -163,7 +167,6 @@
       (append (mkassoc '(
 		  "\\.pl\\'" prolog-mode
  		  "\\.txt$" auto-fill-mode
-		  ; "\\.my\\'" mython-mode
 		  "\\.py$" python-mode
 		  "\\.clj$'" clojure-mode
 		  "\\.el$" emacs-lisp-mode
@@ -277,14 +280,7 @@
 					; fuel
     (load-file (concat fbase "misc/fuel/fu.el"))
     (setq fuel-listener-factor-binary (concat fbase "factor")
-	  fuel-listener-factor-image (concat fbase "factor.image"))
-
-  ;; custom fuel keys
-;  (define-key fuel-mode-map (kbd "C-c p") 'fuel-eval-definition)
-;  (define-key fuel-mode-map (kbd "C-c u") 'fuel-show-callers)
-;  (define-key fuel-mode-map (kbd "C-c o") 'fuel-show-callees)
-;  (define-key fuel-mode-map (kbd "C-c i") 'fuel-refactor-inline-word)
-    ))
+	  fuel-listener-factor-image (concat fbase "factor.image"))))
 
 ;----------------
 ; gnu smalltalk
