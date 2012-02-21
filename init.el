@@ -69,6 +69,7 @@
   `(when (fboundp ',fn) (,fn -1)))
 
 (mapm disable-if-bound
+      (menu-bar-mode)
       (toggle-scroll-bar)
       (tool-bar-mode)
       (osx-key-mode)
@@ -143,6 +144,7 @@
   (ido-mode t))
 
 (use-ido)
+
 
 ;**************
 ; Shortcuts
