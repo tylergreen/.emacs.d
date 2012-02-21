@@ -1,4 +1,4 @@
-;; My .emacs file
+;; My .emacs file for EMACS 24
 ;; to find unbalanced parens -- go to the end of the file and type C-u C-M-u.
 ;; This will move you to the beginning of the first defun that is unbalanced. 
 
@@ -37,28 +37,10 @@
       (load-file filename)))
 
 ;*******************
-; Environments
+; Parenthesis Matching
 
-(defun install-elpa ()
-  (let ((buffer (url-retrieve-synchronously
-		 "http://tromey.com/elpa/package-install.el")))
-    (save-excursion
-      (set-buffer buffer)
-      (goto-char (point-min))
-      (re-search-forward "^$" nil 'move)
-      (eval-region (point) (point-max))
-      (kill-buffer (current-buffer)))))
-
-(defun elpa-installedp ()
-  (fboundp 'package-list-packages))
-
-(if (elpa-installedp)
-    (when (load
-	   (expand-file-name "~/.emacs.d/elpa/package.el"))
-      (package-initialize))
-  (install-elpa))
-
-(load-if-exists "~/.emacs.d/elpa/yaml-mode-0.0.5/yaml-mode.el")
+(electric-pair-mode 1)
+(show-paren-mode 1)
 
 ;***************
 ; Customizations
@@ -88,14 +70,9 @@
       ((member system-type '(gnu/linux linux))
        (linux-setup)))
 
-(defun in-cs (extension) (concat CS extension))
-
 (defun add-lib (name)
   (add-to-list 'load-path
 	       (concat "~/.emacs.d/" name)))
-
-; do this properly- not portable
-
 
 (mapc 'add-lib '("."
 		"emacs-utils/"
@@ -128,34 +105,16 @@
 
 (mapc 'require
       '(cl
-;	multi-term
 	ibuffer 
 	tramp
 	sql
-;	with-stack
-;	erlang
 	))
-
-(if (= 24 emacs-major-version )
-    (electric-pair-mode)
-  (progn (require 'autopair)
-	 (autopair-global-mode t)))
-
-
 
 (defun use-ido ()
   (require 'ido)
   (ido-mode t))
 
 (use-ido)
-
-
-;**************
-; Shortcuts
-
-(defun mylog ()
-  (interactive)
-  (find-file (in-cs "/log/log.txt")))
 
 ;****************
 ; Emacs Config
@@ -217,8 +176,6 @@
 
 (datahand)
 
-(add-hook 'comint-mode- (fn () (define-key comint-mode-map (kbd "M-d") 'shell-resync-dirs)))
-
 (defun disable (commands)
   (mapc (fn (x) (put x 'disabled t))
 	commands))
@@ -235,16 +192,6 @@
   `(defun ,name () 
      (interactive)
      ,@body))
-
-(defi recompile-emacs ()
-  (byte-compile-file "~/.emacs.d/init.el"))
-
-(add-hook 'kill-emacs-hook 'recompile-emacs)
-
-(defi reload-emacs 
-  (byte-compile-file "~/.emacs.d/init.el")
-  (load-file "~/.emacs.d/init.elc")
-  (autopair-global-mode t))
 
 (defi dot
   (find-file "~/.emacs.d/init.el"))
@@ -266,124 +213,6 @@
 (defi cap-prev 
   (backward-word)
   (capitalize-word 1))
-
-(defun my-html-mode-hook ()
-  (define-key html-mode-map (kbd "C-c C-;") 'sgml-close-tag))
-
-(add-hook 'html-mode-hook 'my-html-mode-hook)
-
-;**************
-; Factor Setting
-
-(defun use-factor ()
-  (let ((fbase "~/cs/factor/"))
-					; fuel
-    (load-file (concat fbase "misc/fuel/fu.el"))
-    (setq fuel-listener-factor-binary (concat fbase "factor")
-	  fuel-listener-factor-image (concat fbase "factor.image"))))
-
-;----------------
-; gnu smalltalk
-
-(defun use-smalltalk ()
-  (autoload 'smalltalk-mode
-    (in-cs "st-src/smalltalk-mode.el")
-    "" t)
-
-  (push '("\\.st\\'" . smalltalk-mode)
-	auto-mode-alist))
-
-; *********
-; slime
-
-(defun use-slime ()
-  (global-set-key "\C-cd" 'slime-eval-defun)
-
-  ; load slime:
-  (nconc load-path
-	 (mapcar 'in-cs
-		 '("cl/clbuild/source/slime/contrib"
-		   "cl/clbuild/source/slime")))
-
-  (setq slime-backend
-	(in-cs "cl/clbuild/.swank-loader.lisp") ;;file contains swank-loader
-	inhibit-splash-screen t
-	inferior-lisp-program (in-cs "cl/clbuild/clbuild --implementation sbcl lisp")
-	slime-use-autodoc-mode nil)
-
-  (load (in-cs "cl/clbuild/source/slime/slime"))
- 
-  (slime-require :swank-listener-hooks)
-  (slime-setup '(slime-fancy slime-tramp slime-asdf))
-  )
-
-;***************
-; clojure-slime
-
-(defun use-clojure ()
-; clojure-mode
- (require 'clojure-mode)
-
-; swank-clojure
- (add-to-list 'load-path "~/cs/clojure/swank-clojure/src/emacs")
-
-  (setq swank-clojure-jar-path "~/cs/clojure/clojure-core/clojure.jar"
-	swank-clojure-extra-classpaths
-	(list "~/cs/clojure/swank-clojure/src/main/clojure"
-	      "~/cs/clojure/clojure-contrib/clojure-contrib.jar"))
-
-  (require 'swank-clojure-autoload)
-
-  (add-to-list 'slime-lisp-implementations '(sbcl ("sbcl")))
-  )
-
-; M-- M-x slime ;; prompts which lisp to use, sbcl or clojure
-; slime-quit-lisp to close
-
-(defun use-distel ()
-;; This is needed for Distel setup
-  (let ((distel-dir "/Users/jorge/cs/erlang/distel/elisp"))
-    (unless (member distel-dir load-path)
-    ;; Add distel-dir to the end of load-path
-      (add-to-list 'load-path distel-dir)))
-
-  (require 'distel)
-  (distel-setup)
-  
-  (add-hook 'erlang-mode-hook
-	    (fn ()
-	      ;; when starting an Erlang shell in Emacs, default in the node name
-	      (setq inferior-erlang-machine-options '("-sname" "emacs"))
-	      ;; add Erlang functions to an imenu menu
-	      (imenu-add-to-menubar "imenu")))
-
-  ;; A number of the erlang-extended-mode key bindings are useful in the shell too
-  (defconst distel-shell-keys
-    '(("\C-\M-i"   erl-complete)
-      ("\M-?"      erl-complete)	
-      ("\M-."      erl-find-source-under-point)
-      ("\M-,"      erl-find-source-unwind) 
-      ("\M-*"      erl-find-source-unwind) 
-      )
-    "Additional keys to bind when in Erlang shell.")
-
-  (add-hook 'erlang-shell-mode-hook
-	    (fn ()
-      ;; add some Distel bindings to the Erlang shell
-	      (dolist (spec distel-shell-keys)
-		(define-key erlang-shell-mode-map (car spec) (cadr spec)))))
-  )
-
-;;;;;;;;;;;;;
-;; Frequencey commands
-
-(defun use-comm-freq ()
-  (require 'command-frequency)
-  (command-frequency-table-load)
-  (command-frequency-mode 1)
-  (command-frequency-autosave-mode 1))
-
-;; End Erlang
 
 ;; Customize this for you own use -- straight from emacs-fu
 (setq ibuffer-saved-filter-groups
@@ -413,15 +242,4 @@
 (add-hook 'ibuffer-mode-hook
   (fn () (ibuffer-switch-to-saved-filter-groups "default")))
 
-(load-if-exists "~/.emacs.d/local-config.el")
-
-;;; This was installed by package-install.el.
-;;; This provides support for the package system and
-;;; interfacing with ELPA, the package archive.
-;;; Move this code earlier if you want to reference
-;;; packages in your .emacs.
-(when
-    (load
-     (expand-file-name "~/.emacs.d/elpa/package.el"))
-  (package-initialize))
 
