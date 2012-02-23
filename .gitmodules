@@ -1,0 +1,3 @@
+[submodule "vendor/gnuplot-mode"]
+	path = vendor/gnuplot-mode
+	url = git://github.com/bruceravel/gnuplot-mode
