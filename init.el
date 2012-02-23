@@ -77,7 +77,7 @@
        (linux-setup)))
 
 ; put a file name '.nosearch' in directories you do not want to be loaded
-(let ((default-directory "~/.emacs.d/"))
+(let ((default-directory "~/.emacs.d/lisp/"))
       (normal-top-level-add-subdirs-to-load-path))
 
 
