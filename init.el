@@ -39,8 +39,14 @@
 ;*******************
 ; Parenthesis Matching
 
-(electric-pair-mode 1)
-(show-paren-mode 1)
+(electric-pair-mode t)
+(show-paren-mode t)
+(setq show-paren-delay 2) ; delay in seconds
+
+;*******
+; Shell Mode
+
+(dirtrack-mode t)
 
 ;***************
 ; Customizations
@@ -106,15 +112,10 @@
 (mapc 'require
       '(cl
 	ibuffer 
+	ido
 	tramp
 	sql
 	))
-
-(defun use-ido ()
-  (require 'ido)
-  (ido-mode t))
-
-(use-ido)
 
 ;****************
 ; Emacs Config
@@ -122,16 +123,16 @@
 ; don't make me type yes and no
 (fset 'yes-or-no-p 'y-or-n-p)
 
-(setq auto-mode-alist
-      (append (mkassoc '(
+(mapc (fn (pair) (add-to-list 'auto-mode-alist pair))
+      (mkassoc '(
+ 		  "\\.cljs\\'" clojure-mode
 		  "\\.pl\\'" prolog-mode
- 		  "\\.txt$" auto-fill-mode
-		  "\\.py$" python-mode
-		  "\\.clj$'" clojure-mode
-		  "\\.el$" emacs-lisp-mode
-		  "\\.yml$" yaml-mode
-		  ))
-	      auto-mode-alist))
+ 		  "\\.txt\\'" auto-fill-mode
+		  "\\.py\\'" python-mode
+		  "\\.clj\\''" clojure-mode
+		  "\\.el\\'" emacs-lisp-mode
+		  "\\.yml\\'" yaml-mode
+		  )))
 
 ;; classic lisp macro example
 (defmacro global-keymap (&rest bindings)
