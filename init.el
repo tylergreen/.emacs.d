@@ -76,14 +76,10 @@
       ((member system-type '(gnu/linux linux))
        (linux-setup)))
 
-(defun add-lib (name)
-  (add-to-list 'load-path
-	       (concat "~/.emacs.d/" name)))
+; put a file name '.nosearch' in directories you do not want to be loaded
+(let ((default-directory "~/.emacs.d/"))
+      (normal-top-level-add-subdirs-to-load-path))
 
-(mapc 'add-lib '("."
-		"emacs-utils/"
-		"erlang/"
-		))
 
 ;;;;;;;;;;;;;;;;;
 ; Windowing Config 
@@ -93,8 +89,8 @@
 	  'ansi-color-for-comint-mode-on)
 
 (defun make-pretty ()
-  (add-lib "color-theme-6.6.0/")
-  (add-lib "color-theme-6.6.0/themes/")
+;  (add-lib "color-theme-6.6.0/")
+;  (add-lib "color-theme-6.6.0/themes/")
   (require 'color-theme)
   (color-theme-initialize)
   (if window-system 
@@ -115,8 +111,10 @@
 	ido
 	tramp
 	sql
+	coffee-mode
 	))
 
+(ido-mode)
 ;****************
 ; Emacs Config
 
@@ -156,7 +154,6 @@
  "C-x C-n" next-line
  "M-g" goto-line
  "M-j" shell
- "C-c f" run-factor
  "C-c C-q" quote-prev
  "M-u" upcase-prev
  "M-c" cap-prev
