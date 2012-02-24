@@ -43,7 +43,7 @@
 (show-paren-mode t)
 (setq show-paren-delay 2) ; delay in seconds
 
-(setq-default tab-with 4)
+(setq-default tab-width 4)
 
 ;*******
 ; Shell Mode
@@ -247,9 +247,9 @@
 ; Major Modes 
 
 (defun coffee-custom ()
-  (setq (make-local-variable 'tab-width) 2))
+  (set (make-local-variable 'tab-width) 2))
 
 (if (fboundp 'coffee-mode)
     (add-hook 'coffee-mode-hook
-	      (fn () (coffee-custom))))
+	      '(lambda () (coffee-custom))))
 
