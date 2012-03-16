@@ -1,6 +1,3 @@
 [submodule "lisp/submods/gnuplot-mode"]
 	path = lisp/submods/gnuplot-mode
 	url = git://github.com/bruceravel/gnuplot-mode
-[submodule "lisp/submods/coffe-mode"]
-	path = lisp/submods/coffe-mode
-	url = https://github.com/defunkt/coffee-mode.git
