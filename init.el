@@ -39,7 +39,7 @@
 ;*******************
 ; Parenthesis Matching
 
-(electric-pair-mode t)
+(if (= 24 emacs-major-version) (electric-pair-mode t))
 (show-paren-mode t)
 (setq show-paren-delay 2) ; delay in seconds
 
@@ -121,6 +121,15 @@
 	))
 
 (ido-mode)
+
+(defun use-emacs-chrome ()
+  (load-file "~/.emacs.d/lisp/submods/emacs_chrome/servers/edit-server.el")
+  (require 'edit-server)
+  (edit-server-start)
+  )
+
+(if (eq system-type 'darwin) (use-emacs-chrome))
+
 ;****************
 ; Emacs Config
 

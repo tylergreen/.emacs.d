@@ -1,3 +1,9 @@
 [submodule "lisp/submods/gnuplot-mode"]
 	path = lisp/submods/gnuplot-mode
 	url = git://github.com/bruceravel/gnuplot-mode
+[submodule "lisp/submods/coffee-mode"]
+	path = lisp/submods/coffee-mode
+	url = https://github.com/defunkt/coffee-mode.git
+[submodule "lisp/submods/emacs_chrome"]
+	path = lisp/submods/emacs_chrome
+	url = https://github.com/stsquad/emacs_chrome.git
